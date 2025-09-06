@@ -34,3 +34,26 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+```
+my-nextjs-project/
+│── public/            # Static assets (images, fonts, etc.)
+│── src/               # Main source code
+│   ├── components/    # Reusable UI components
+│   ├── layouts/       # Layout components (Navbar, Footer, etc.)
+│   ├── pages/         # Next.js pages (Routing is handled here)
+│   ├── styles/        # Global styles (CSS, SCSS, Tailwind, etc.)
+│   ├── hooks/         # Custom React hooks
+│   ├── utils/         # Helper functions and utilities
+│   ├── context/       # Context API for global state management
+│   ├── services/      # API calls and data fetching logic
+│   ├── store/         # Redux or Zustand store (if using state management)
+│   ├── middleware/    # Authentication & authorization logic
+│   ├── config/        # Configuration files (e.g., environment variables)
+│   ├── constants/     # Constant values (e.g., roles, URLs, static data)
+│── .local.env               # Environment variables
+│── next.config.js     # Next.js configuration
+│── package.json       # Project metadata and dependencies
+│── README.md          # Project documentation
+│── tsconfig.json      # TypeScript configuration (if using TypeScript)
+```
