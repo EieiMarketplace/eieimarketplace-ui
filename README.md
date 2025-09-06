@@ -40,16 +40,12 @@ my-nextjs-project/
 │── public/            # Static assets (images, fonts, etc.)
 │── src/               # Main source code
 │   ├── components/    # Reusable UI components
-│   ├── layouts/       # Layout components (Navbar, Footer, etc.)
-│   ├── pages/         # Next.js pages (Routing is handled here)
 │   ├── styles/        # Global styles (CSS, SCSS, Tailwind, etc.)
 │   ├── hooks/         # Custom React hooks
 │   ├── utils/         # Helper functions and utilities
 │   ├── context/       # Context API for global state management
 │   ├── services/      # API calls and data fetching logic
-│   ├── store/         # Redux or Zustand store (if using state management)
-│   ├── middleware/    # Authentication & authorization logic
-│   ├── config/        # Configuration files (e.g., environment variables)
+│   ├── store/         # Redux or Zustand store (if using  environment variables)
 │   ├── constants/     # Constant values (e.g., roles, URLs, static data)
 │── .local.env               # Environment variables
 │── next.config.js     # Next.js configuration
