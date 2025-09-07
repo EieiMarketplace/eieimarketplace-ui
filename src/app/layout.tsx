@@ -1,7 +1,7 @@
 import "./globals.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import NextAuthProvider from "./providers/NextAuthProvider";
+import NextAuthProvider from "../providers/NextAuthProvider";
 
 export default async function RootLayout({
   children,

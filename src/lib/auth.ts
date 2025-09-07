@@ -1,6 +1,6 @@
 import { NextAuthOptions, SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginService } from "@/app/services/login";
+import { loginService } from "@/services/login";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,6 +17,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
+          console.log("Attempting to log in with:");
           const data = await loginService(credentials);
 
           if (data && data.access_token) {
