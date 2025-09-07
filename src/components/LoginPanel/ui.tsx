@@ -70,7 +70,7 @@ export default function LoginPanel() {
       } else {
         router.push("/home");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);

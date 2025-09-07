@@ -53,10 +53,10 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+    async redirect({ baseUrl }) {
       return baseUrl;
     },
-    async signIn({ user }: { user: any }) {
+    async signIn({ user }) {
       if (!user) {
         return false;
       }
