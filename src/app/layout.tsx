@@ -2,6 +2,7 @@ import "./globals.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import NextAuthProvider from "../providers/NextAuthProvider";
+import { LoadingProvider } from "@/providers/LoadingProvider";
 
 export default async function RootLayout({
   children,
@@ -12,9 +13,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen bg-[#F9F8F9] ">
         <NextAuthProvider session={nextAuthSession}>
-          {children}
+          <LoadingProvider>{children}</LoadingProvider>
         </NextAuthProvider>
       </body>
     </html>

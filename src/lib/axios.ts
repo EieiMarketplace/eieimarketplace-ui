@@ -16,7 +16,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const accessToken = await getSession();
-    console.log("Access Token:", accessToken);
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken.user?.token}`;
     }
@@ -33,7 +33,6 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log("OHHHHHH");
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {

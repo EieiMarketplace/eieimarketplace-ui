@@ -6,7 +6,7 @@ export const userService = {
     const response = await axiosInstance.get<ApiResponse<any>>(
       `/users/users?skip=0&limit=100`
     );
-    console.log("Response Data:", response);
+
     return response.data;
   },
 };

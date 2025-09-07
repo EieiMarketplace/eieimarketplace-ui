@@ -17,7 +17,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          console.log("Attempting to log in with:");
           const data = await loginService(credentials);
 
           if (data && data.access_token) {

@@ -15,7 +15,6 @@ export async function loginService(credentials: {
       }),
     }
   );
-  console.log(`Hello ${process.env.NEXT_PUBLIC_API_URL}/users/login`);
 
   if (!response.ok) {
     return null;
