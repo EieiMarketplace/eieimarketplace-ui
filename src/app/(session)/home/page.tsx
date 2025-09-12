@@ -1,7 +1,6 @@
 "use client";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
-import { userService } from "../../services/users";
+
+import { userService } from "../../../services/users";
 import { useEffect } from "react";
 
 export default function HomePage() {
@@ -9,6 +8,7 @@ export default function HomePage() {
   // console.log("session", session);
   const getUser = async () => {
     const response = await userService.getUsers();
+    console.log(response);
     // return response;
   };
   useEffect(() => {

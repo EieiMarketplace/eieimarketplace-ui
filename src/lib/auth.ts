@@ -21,8 +21,9 @@ export const authOptions: NextAuthOptions = {
 
           if (data && data.access_token) {
             return {
-              id: "1",
-              email: credentials.email,
+              id: data.id,
+              role: data.role,
+              email: data.email,
               token: data.access_token,
             };
           }
@@ -44,12 +45,15 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.token = user.token;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.token = token.token as string;
+        session.user.role = token.role as string;
+        session.user.email = token.email as string;
       }
       return session;
     },
