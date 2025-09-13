@@ -5,10 +5,12 @@ import { Search, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Market } from "@/shared/interface";
+import { useRouter } from "next/navigation";
 
 export default function MarketListPage() {
   const [search, setSearch] = useState("");
   const [markets, setMarkets] = useState<Market[]>([]);
+  const router = useRouter();
   const notfound = "N/A"
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function MarketListPage() {
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-2 py-2 outline-none text-sm"
+            className="w-full px-2 py-2 outline-none text-sm "
           />
         </div>
         <Button className="bg-indigo-500 hover:bg-indigo-600">Search</Button>
@@ -58,18 +60,19 @@ export default function MarketListPage() {
       {/* Market List */}
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredMarkets.map((market) => (
-          <Card key={market.id} className="!py-0 !space-y-0 !gap-0 overflow-hidden shadow-lg">
+          <Card key={market.id} className="!py-0 !space-y-0 !gap-0 overflow-hidden shadow-lg cursor-pointer">
             <img
               src={market.coverImageKey || "./images/Taiwan.jpg"}
               alt={market.marketName || notfound}
+              onClick={() => router.push(`/market/${market.id}`)}
               className="w-full h-[50%] object-cover"
             />
-            <div className="bg-green-600 text-white p-2 font-medium">
+            <div className="bg-green-600 text-white p-4 font-semibold text-xl">
               {market.marketName || notfound}
             </div>
             <CardContent className="text-sm">
-              <div className="flex items-center gap-1 text-gray-700">
-                <MapPin className="h-4 w-4" />
+              <div className="flex items-center gap-1 text-gray-700 py-3 font-semibold">
+                <MapPin/>
                 {market.address || notfound}
               </div>
               <p className="mt-2 text-gray-600">{market.detail || notfound}</p>
