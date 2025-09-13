@@ -54,7 +54,7 @@ export default function MarketListPage() {
             <img
               src={market.coverImageKey || "./images/Taiwan.jpg"}
               alt={market.marketName || notfound}
-              onClick={() => router.push(`/market/${market.id}`)}
+              onClick={() => router.push(`/my-market/${market.id}`)}
               className="w-full h-[50%] object-cover"
             />
             <div className="bg-green-600 text-white p-4 font-semibold text-xl">
