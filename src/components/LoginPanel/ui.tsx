@@ -59,7 +59,7 @@ export default function LoginPanel() {
         redirect: false,
         callbackUrl: "/",
       });
-      //   console.log(result);
+
       if (result?.error && result.error == "CredentialsSignin") {
         form.setError("email", {
           message: "Username or password is incorrect",
@@ -68,7 +68,7 @@ export default function LoginPanel() {
           message: "Username or password is incorrect",
         });
       } else {
-        router.push("/home");
+        router.push("/");
       }
     } catch (error) {
       console.error(error);

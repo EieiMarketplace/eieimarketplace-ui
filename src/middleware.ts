@@ -7,13 +7,21 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  const { pathname } = request.nextUrl;
+
   if (!token) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+
+  if (pathname.startsWith("/my-market")) {
+    if (token.role !== "organizer") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/my-market/:path*", "/my-market"],
+  matcher: ["/my-market/:path*", "/home"],
 };

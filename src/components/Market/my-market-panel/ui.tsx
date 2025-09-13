@@ -11,7 +11,7 @@ export default function MyMarketPanel() {
   const { setLoading } = useLoading();
   const { data: session } = useSession();
   const userID = session?.user.id;
-  console.log("session", session);
+
   const [markets, setMarkets] = useState<Market[]>([]);
 
   const [searchValue, setSearchValue] = useState<MarketRequestParams>({

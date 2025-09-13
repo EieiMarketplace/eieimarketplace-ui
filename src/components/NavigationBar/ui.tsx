@@ -25,7 +25,9 @@ import { Button } from "../ui/button";
 
 export default function NavigationBar() {
   const { data: session, status } = useSession();
-
+  if (status === "loading") {
+    return null;
+  }
   return (
     <div className="h-[50px] bg-[#D9D9D9] w-full rounded-md flex flex-row px-2">
       <div className="content-center justify-between space-x-5">
