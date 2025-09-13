@@ -32,7 +32,7 @@ export default function NavigationBar() {
         <TextWithRedirect text="Home" url="/home" />
         <TextWithRedirect text="Markets" url="/markets" />
 
-        {session?.user?.role === "organizor" && (
+        {session?.user?.role === "organizer" && (
           <TextWithRedirect text="My Markets" url="/my-market" />
         )}
 
