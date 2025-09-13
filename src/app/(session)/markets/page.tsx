@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import { Search, MapPin } from "lucide-react";
@@ -11,7 +11,7 @@ export default function MarketListPage() {
   const [search, setSearch] = useState("");
   const [markets, setMarkets] = useState<Market[]>([]);
   const router = useRouter();
-  const notfound = "N/A"
+  const notfound = "N/A";
 
   useEffect(() => {
     fetch("http://localhost:7002/markets")
@@ -26,16 +26,6 @@ export default function MarketListPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <div className="flex justify-between items-center bg-gray-200 p-4 border-b">
-        <div className="flex gap-2">
-          <Button variant="outline">Home</Button>
-          <Button variant="outline">Market</Button>
-          <Button variant="outline">My Reservation</Button>
-        </div>
-        <div className="font-medium">myName</div>
-      </div>
-
       {/* Title */}
       <div className="p-6">
         <h1 className="text-2xl font-bold">All Market Lists</h1>
@@ -72,7 +62,7 @@ export default function MarketListPage() {
             </div>
             <CardContent className="text-sm">
               <div className="flex items-center gap-1 text-gray-700 py-3 font-semibold">
-                <MapPin/>
+                <MapPin />
                 {market.address || notfound}
               </div>
               <p className="mt-2 text-gray-600">{market.detail || notfound}</p>
@@ -83,11 +73,19 @@ export default function MarketListPage() {
 
       {/* Pagination placeholder */}
       <div className="flex justify-center items-center gap-2 pb-6">
-        <Button variant="outline" size="sm">1</Button>
-        <Button variant="ghost" size="sm">2</Button>
+        <Button variant="outline" size="sm">
+          1
+        </Button>
+        <Button variant="ghost" size="sm">
+          2
+        </Button>
         <span className="text-gray-500">...</span>
-        <Button variant="ghost" size="sm">9</Button>
-        <Button variant="ghost" size="sm">10</Button>
+        <Button variant="ghost" size="sm">
+          9
+        </Button>
+        <Button variant="ghost" size="sm">
+          10
+        </Button>
       </div>
     </div>
   );

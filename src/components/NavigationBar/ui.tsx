@@ -25,14 +25,14 @@ import { Button } from "../ui/button";
 
 export default function NavigationBar() {
   const { data: session, status } = useSession();
-  console.log(session);
+
   return (
     <div className="h-[50px] bg-[#D9D9D9] w-full rounded-md flex flex-row">
       <div className="content-center justify-between space-x-5">
         <TextWithRedirect text="Home" url="/home" />
         <TextWithRedirect text="Markets" url="/markets" />
 
-        {session?.user?.role === "organizor" && (
+        {session?.user?.role === "organizer" && (
           <TextWithRedirect text="My Markets" url="/my-market" />
         )}
 
