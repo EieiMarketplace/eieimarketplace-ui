@@ -60,7 +60,7 @@ export default function MarketListPage() {
       {/* Market List */}
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredMarkets.map((market) => (
-          <Card key={market.id} className="!py-0 !space-y-0 !gap-0 overflow-hidden shadow-lg cursor-pointer">
+          <Card key={market.id} className="!py-0 !space-y-0 !gap-0 overflow-hidden shadow-lg cursor-pointer hover:-translate-y-1 hover:shadow-2xl">
             <img
               src={market.coverImageKey || "./images/Taiwan.jpg"}
               alt={market.marketName || notfound}
