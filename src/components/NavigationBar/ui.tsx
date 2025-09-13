@@ -55,7 +55,7 @@ export default function NavigationBar() {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button className="w-full" variant="outline">
-                      Logout
+                      {"Logout"}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
