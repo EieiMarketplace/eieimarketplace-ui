@@ -2,7 +2,26 @@
 
 import TextWithRedirect from "../TextWithRedirect";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "../ui/dropdown-menu";
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 
 export default function NavigationBar() {
   const { data: session, status } = useSession();
@@ -22,13 +41,41 @@ export default function NavigationBar() {
         )}
       </div>
       <div className="content-center ml-auto">
-        <span className="text-center text-xl font-semibold cursor-pointer hover:underline">
-          {session ? (
-            session.user.email
-          ) : (
-            <TextWithRedirect text="Login" url="/auth/login" />
-          )}
-        </span>
+        {session ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <span className="text-center text-xl font-semibold cursor-pointer hover:underline">
+                {session.user.email}
+              </span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full" variant="outline">
+                      Logout
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Would you like to Logout?</DialogTitle>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button onClick={() => signOut()}>Confirm</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <TextWithRedirect text="Login" url="/auth/login" />
+        )}
       </div>
     </div>
   );
