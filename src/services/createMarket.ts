@@ -10,7 +10,7 @@ export async function createMarketService(marketData: {
   userid: string;
 }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL_Market}/markets`, // adjust endpoint if needed
+    `${process.env.NEXT_PUBLIC_API_URL_Market}/markets`,
     {
       method: "POST",
       headers: {

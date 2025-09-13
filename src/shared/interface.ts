@@ -32,3 +32,12 @@ export interface Market {
   rule: string;
   userid: string;
 }
+
+export interface MarketRequestParams {
+  market_name: string;
+  address: string;
+  detail: string;
+  user_id: string;
+  limit: string;
+  offset: string;
+}
