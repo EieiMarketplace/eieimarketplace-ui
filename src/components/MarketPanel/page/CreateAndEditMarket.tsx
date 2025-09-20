@@ -27,6 +27,7 @@ export default function CreateAndEditMarketPanel({
     rule: "",
     coverImageKey: null as File | null,
     marketPlanKeys: [] as File[],
+    logs: [] as { size: string; price: number }[],
   });
   const { data: session } = useSession();
   const userID = session?.user.id;
@@ -43,6 +44,7 @@ export default function CreateAndEditMarketPanel({
             rule: market.rule || "",
             coverImageKey: null,
             marketPlanKeys: [],
+            logs: market.logs || [],
           });
         } catch (error) {
           console.error("Failed to fetch market data:", error);
@@ -80,18 +82,25 @@ export default function CreateAndEditMarketPanel({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
+    
     const payload = {
       id: Id,
       marketName: formData.marketName,
       address: formData.address,
       coverImageKey: formData.coverImageKey?.name || "",
       marketPlanKeys: formData.marketPlanKeys.map((f) => f.name),
-      logs: [],
+      logs: formData.logs.map((log) => ({
+        size: log.size,
+        price: log.price,
+        user_id: userID,             
+        reservation_id: 0
+      })),
       detail: formData.detail,
       rule: formData.rule,
       userid: userID?.toString()!!,
     };
+    console.log(payload);
 
     if (editMode === "Create") {
       try {
@@ -116,6 +125,32 @@ export default function CreateAndEditMarketPanel({
     setPopupMessage(null);
     window.location.href = "/my-market/" + Id;
   }
+
+  const updateLog = (index: number, field: "size" | "price", value: string) => {
+    setFormData((prev) => {
+      const newLogs = [...prev.logs];
+      if (field === "price") {
+        newLogs[index][field] = parseFloat(value) || 0;
+      } else {
+        newLogs[index][field] = value;
+      }
+      return { ...prev, logs: newLogs };
+    });
+  };
+
+  const removeLog = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      logs: prev.logs.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addLog = () => {
+    setFormData((prev) => ({
+      ...prev,
+      logs: [...prev.logs, { size: "", price: 0 }],
+    }));
+  };
 
   return (
     <div className="relative flex justify-center items-center min-h-screen bg-gray-50 p-6">
@@ -222,6 +257,57 @@ export default function CreateAndEditMarketPanel({
                   ))}
                 </ul>
               )}
+            </div>
+
+            {/* 👇 Logs Section */}
+            <div>
+              <label className="block mb-2 text-sm font-medium">Logs</label>
+              {formData.logs.map((log, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-12 gap-2 items-center mb-2 border p-3 rounded-md"
+                >
+                  <div className="col-span-5">
+                    <label className="block text-xs font-medium mb-1">Size</label>
+                    <Input
+                      type="text"
+                      placeholder="e.g., 2x3, M, 10sqm"
+                      value={log.size}
+                      onChange={(e) => updateLog(index, "size", e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="col-span-5">
+                    <label className="block text-xs font-medium mb-1">Price</label>
+                    <Input
+                      type="number"
+                      placeholder="Enter price"
+                      value={log.price}
+                      onChange={(e) => updateLog(index, "price", e.target.value)}
+                    />
+                  </div>
+
+                  <div className="col-span-2 flex justify-end">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeLog(index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                onClick={addLog}
+                className="mt-2 w-full bg-green-600 text-white"
+              >
+                + Add Log
+              </Button>
             </div>
 
             <Button type="submit" className="w-full">
