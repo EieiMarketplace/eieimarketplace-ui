@@ -87,12 +87,14 @@ export default function MarketDetailPanel() {
               Market Plans
             </h2>
             <div className="grid grid-cols-1 gap-4">
-              {market.marketPlanKeys.length !== 0 ? (
-                market.marketPlanKeys.map((plan, index) => (
+              {market.marketPlanKeys && market.marketPlanKeys.length > 0 ? (
+                market.marketPlanKeys!!.map((plan, index) => (
                   <Dialog key={index}>
                     <DialogTrigger asChild>
                       <img
-                        src={plan.marketPlanKey || "../images/Market_Plan.jpg"}
+                        src={
+                          plan.marketPlanImageUrl || "../images/Market_Plan.jpg"
+                        }
                         className="w-full h-48 object-cover rounded-md cursor-pointer hover:opacity-90 transition"
                       />
                     </DialogTrigger>
@@ -101,7 +103,9 @@ export default function MarketDetailPanel() {
                         <DialogTitle>Market Plan {index + 1}</DialogTitle>
                       </VisuallyHidden>
                       <img
-                        src={plan.marketPlanKey || "../images/Market_Plan.jpg"}
+                        src={
+                          plan.marketPlanImageUrl || "../images/Market_Plan.jpg"
+                        }
                         className="rounded-md"
                       />
                     </DialogContent>
@@ -137,16 +141,24 @@ export default function MarketDetailPanel() {
                 <table className="min-w-full divide-y divide-gray-200 text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-2 text-left font-medium text-gray-600">#</th>
-                      <th className="px-4 py-2 text-left font-medium text-gray-600">Size</th>
-                      <th className="px-4 py-2 text-left font-medium text-gray-600">Price</th>
+                      <th className="px-4 py-2 text-left font-medium text-gray-600">
+                        #
+                      </th>
+                      <th className="px-4 py-2 text-left font-medium text-gray-600">
+                        Size
+                      </th>
+                      <th className="px-4 py-2 text-left font-medium text-gray-600">
+                        Price
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 bg-white">
                     {market.logs.map((log, index) => (
                       <tr key={index} className="hover:bg-gray-50 transition">
                         <td className="px-4 py-2 text-gray-700">{index + 1}</td>
-                        <td className="px-4 py-2 text-gray-800 font-medium">{log.size}</td>
+                        <td className="px-4 py-2 text-gray-800 font-medium">
+                          {log.size}
+                        </td>
                         <td className="px-4 py-2 text-gray-700">
                           {log.price.toLocaleString()}
                         </td>
@@ -159,7 +171,6 @@ export default function MarketDetailPanel() {
               <p className="text-gray-500 text-sm">No logs available</p>
             )}
           </div>
-
 
           {/* Edit Button */}
           <div className="flex justify-end mt-6">
