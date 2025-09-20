@@ -23,7 +23,9 @@ export function MarketCard({
       }}
     >
       <img
-        src={market.coverImageKey || "./images/Taiwan.jpg"}
+        src={
+          market.coverImageUrl ? market.coverImageUrl : "./images/Taiwan.jpg"
+        }
         alt={market.marketName || NOT_FOUND}
         className="w-full h-[50%] object-cover"
       />

@@ -1,3 +1,5 @@
+import { Blob } from "buffer";
+
 export interface ApiResponse<T> {
   status: number;
   data: T;
@@ -17,20 +19,25 @@ export interface MarketPlanKey {
 export interface MarketLog {
   size: string;
   price: number;
-  userID: number;
-  reservationID: number;
+  user_id: string;
+  reservation_id: string;
 }
 
 export interface Market {
-  id: string;
+  id?: string;
   marketName: string;
   address: string;
   coverImageKey: string;
-  marketPlanKeys: MarketPlanKey[];
+  marketPlanKeys?: MarketPlanKey[];
   logs: MarketLog[];
   detail: string;
   rule: string;
   userid: string;
+  coverImageUrl?: string;
+}
+
+export interface MarketCreateRequest extends Market {
+  coverImageFile?: File | null;
 }
 
 export interface MarketRequestParams {

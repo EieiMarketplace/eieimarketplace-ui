@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,13 +10,13 @@ import {
   DialogContent,
   DialogTrigger,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+} from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { getMarketFromId } from "@/services/getMarketFromId";
 
 export default function MarketDetailPanel() {
   const params = useParams();
-  const id = params?.id as string; 
+  const id = params?.id as string;
   const [market, setMarket] = useState<Market | null>(null);
 
   useEffect(() => {
@@ -34,7 +34,11 @@ export default function MarketDetailPanel() {
   }, [id]);
 
   if (!market) {
-    return <div className="p-10 text-center text-gray-500">Loading market details...</div>;
+    return (
+      <div className="p-10 text-center text-gray-500">
+        Loading market details...
+      </div>
+    );
   }
 
   return (
@@ -42,14 +46,18 @@ export default function MarketDetailPanel() {
       <Card className="max-w-3xl w-full shadow-xl rounded-2xl overflow-hidden">
         {/* Cover Image */}
         <img
-          src={"../images/Taiwan.jpg"}
+          src={
+            market.coverImageUrl ? market.coverImageUrl : "../images/Taiwan.jpg"
+          }
           alt={market.marketName || "N/A"}
           className="w-full h-full object-cover"
         />
 
         <CardContent className="p-8 space-y-6">
           {/* Market Name */}
-          <h1 className="text-3xl font-bold text-gray-800">{market.marketName || "N/A"}</h1>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {market.marketName || "N/A"}
+          </h1>
 
           {/* Address */}
           <div className="flex items-center text-gray-600 gap-2">
@@ -60,18 +68,24 @@ export default function MarketDetailPanel() {
           {/* Detail */}
           <div>
             <h2 className="text-lg font-semibold text-gray-700 mb-2">Detail</h2>
-            <p className="text-gray-600 leading-relaxed">{market.detail || "N/A"}</p>
+            <p className="text-gray-600 leading-relaxed">
+              {market.detail || "N/A"}
+            </p>
           </div>
 
           {/* Rule */}
           <div>
             <h2 className="text-lg font-semibold text-gray-700 mb-2">Rules</h2>
-            <p className="text-gray-600 leading-relaxed">{market.rule || "N/A"}</p>
+            <p className="text-gray-600 leading-relaxed">
+              {market.rule || "N/A"}
+            </p>
           </div>
 
           {/* Market Plan Keys */}
           <div>
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Market Plans</h2>
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">
+              Market Plans
+            </h2>
             <div className="grid grid-cols-1 gap-4">
               {market.marketPlanKeys.length !== 0 ? (
                 market.marketPlanKeys.map((plan, index) => (
@@ -92,25 +106,24 @@ export default function MarketDetailPanel() {
                       />
                     </DialogContent>
                   </Dialog>
-
                 ))
               ) : (
                 <Dialog>
                   <DialogTrigger asChild>
                     <img
-                      src={ "../images/Market_Plan.jpg"}
+                      src={"../images/Market_Plan.jpg"}
                       className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition"
                     />
                   </DialogTrigger>
                   <DialogContent className="sm:!max-w-max">
-                  <VisuallyHidden>
-                    <DialogTitle>Market Plan</DialogTitle>
-                  </VisuallyHidden>
-                  <img
-                    src="../images/Market_Plan.jpg"
-                    className="rounded-md"
-                  />
-                </DialogContent>
+                    <VisuallyHidden>
+                      <DialogTitle>Market Plan</DialogTitle>
+                    </VisuallyHidden>
+                    <img
+                      src="../images/Market_Plan.jpg"
+                      className="rounded-md"
+                    />
+                  </DialogContent>
                 </Dialog>
               )}
             </div>
@@ -159,7 +172,6 @@ export default function MarketDetailPanel() {
               Edit
             </button>
           </div>
-
         </CardContent>
       </Card>
     </div>

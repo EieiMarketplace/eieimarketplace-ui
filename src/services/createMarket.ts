@@ -1,22 +1,9 @@
-export async function createMarketService(marketData: {
-  id: string;
-  marketName: string;
-  address: string;
-  coverImageKey: string;
-  marketPlanKeys: string[];
-  logs: any[];
-  detail: string;
-  rule: string;
-  userid: string;
-}) {
+export async function createMarketService(marketData: FormData) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL_Market}/markets`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(marketData),
+      body: marketData, //   Content-Type multipart/form-data Auto Add
     }
   );
 

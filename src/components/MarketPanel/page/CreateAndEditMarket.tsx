@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { getMarketFromId } from "@/services/getMarketFromId";
 import { editMarketService } from "@/services/editMarket";
 import { useSession } from "next-auth/react";
+import { MarketCreateRequest, MarketLog } from "@/shared/interface";
 
 interface CreateAndEditMarketPanelProps {
   editMode: string;
@@ -20,17 +21,23 @@ export default function CreateAndEditMarketPanel({
   editMode,
   Id,
 }: CreateAndEditMarketPanelProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<MarketCreateRequest>({
+    id: "",
     marketName: "",
     address: "",
+    coverImageKey: "",
     detail: "",
     rule: "",
-    coverImageKey: null as File | null,
-    marketPlanKeys: [] as File[],
-    logs: [] as { size: string; price: number }[],
+
+    coverImageUrl: "",
+    marketPlanKeys: [],
+    coverImageFile: null as File | null,
+    logs: [],
+    userid: "",
   });
   const { data: session } = useSession();
   const userID = session?.user.id;
+  const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (editMode === "Edit" && Id !== "") {
@@ -42,9 +49,11 @@ export default function CreateAndEditMarketPanel({
             address: market.address || "",
             detail: market.detail || "",
             rule: market.rule || "",
-            coverImageKey: null,
+            coverImageKey: market.coverImageKey,
             marketPlanKeys: [],
             logs: market.logs || [],
+            userid: market.userid,
+            coverImageUrl: market.coverImageUrl,
           });
         } catch (error) {
           console.error("Failed to fetch market data:", error);
@@ -53,7 +62,27 @@ export default function CreateAndEditMarketPanel({
     }
   }, [editMode, Id]);
 
-  const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  function createMarketFormData(marketData: MarketCreateRequest): FormData {
+    const formData = new FormData();
+
+    if (marketData.coverImageFile) {
+      formData.append("coverImageFile", marketData.coverImageFile);
+    }
+    formData.append("marketName", marketData.marketName);
+    formData.append("address", marketData.address);
+    formData.append("coverImageKey", marketData.coverImageKey);
+    formData.append("detail", marketData.detail);
+    formData.append("rule", marketData.rule);
+    formData.append("userid", marketData.userid);
+
+    // formData.append( //TODO:
+    //   "marketPlanKeys",
+    //   JSON.stringify(marketData.marketPlanKeys || [])
+    // );
+    // formData.append("logs", JSON.stringify(marketData.logs || [])); //TODO: Log
+
+    return formData;
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -64,47 +93,48 @@ export default function CreateAndEditMarketPanel({
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "coverImageKey" | "marketPlanKeys"
+    field: "coverImageFile" | "marketPlanKeys" //TODO: marketFile wait to fix
   ) => {
     if (!e.target.files) return;
-    if (field === "coverImageKey") {
+    if (field === "coverImageFile") {
       setFormData((prev) => ({
         ...prev,
-        coverImageKey: e.target.files?.[0] || null,
+        coverImageFile: e.target.files?.[0] || null,
       }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        marketPlanKeys: Array.from(e.target.files || []),
-      }));
+      //   setFormData((prev) => ({
+      //     ...prev,
+      //     marketPlanKeys: Array.from(e.target.files || []),
+      //   }));
     }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    
-    const payload = {
-      id: Id,
+
+    const payload: MarketCreateRequest = {
       marketName: formData.marketName,
       address: formData.address,
-      coverImageKey: formData.coverImageKey?.name || "",
-      marketPlanKeys: formData.marketPlanKeys.map((f) => f.name),
-      logs: formData.logs.map((log) => ({
+      coverImageKey: formData.coverImageKey,
+      marketPlanKeys: formData.marketPlanKeys,
+      logs: formData.logs.map((log: MarketLog) => ({
         size: log.size,
         price: log.price,
-        user_id: userID,             
-        reservation_id: 0
+        user_id: log.user_id,
+        reservation_id: "0",
       })),
+
       detail: formData.detail,
       rule: formData.rule,
       userid: userID?.toString()!!,
+      coverImageFile: formData.coverImageFile,
     };
     console.log(payload);
 
+    const request: FormData = createMarketFormData(payload);
+    console.log("Request", request);
     if (editMode === "Create") {
       try {
-        await createMarketService(payload);
+        await createMarketService(request);
         setPopupMessage("Create market successfully");
       } catch (error) {
         console.error(error);
@@ -123,7 +153,7 @@ export default function CreateAndEditMarketPanel({
 
   function OnPopUpClick(): void {
     setPopupMessage(null);
-    window.location.href = "/my-market/" + Id;
+    // window.location.href = "/my-market/" + Id;
   }
 
   const updateLog = (index: number, field: "size" | "price", value: string) => {
@@ -148,7 +178,10 @@ export default function CreateAndEditMarketPanel({
   const addLog = () => {
     setFormData((prev) => ({
       ...prev,
-      logs: [...prev.logs, { size: "", price: 0 }],
+      logs: [
+        ...prev.logs,
+        { size: "", price: 0, user_id: prev.userid || "", reservation_id: "0" },
+      ],
     }));
   };
 
@@ -221,16 +254,16 @@ export default function CreateAndEditMarketPanel({
               <Input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleFileChange(e, "coverImageKey")}
+                onChange={(e) => handleFileChange(e, "coverImageFile")}
                 className="file:mr-4 file:py-2 file:px-4 
                            file:rounded-md file:border-0 
                            file:text-sm file:font-medium
                            file:bg-blue-600 file:text-white
                            hover:file:bg-blue-700"
               />
-              {formData.coverImageKey && (
+              {formData.coverImageFile && (
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.coverImageKey.name}
+                  {formData.coverImageFile.name}
                 </p>
               )}
             </div>
@@ -250,13 +283,13 @@ export default function CreateAndEditMarketPanel({
                            file:bg-blue-600 file:text-white
                            hover:file:bg-blue-700"
               />
-              {formData.marketPlanKeys.length > 0 && (
+              {/* {formData.marketPlanKeys.length > 0 && ( //TODO: Change to market_plan_file
                 <ul className="text-xs text-gray-500 mt-1 space-y-1">
                   {formData.marketPlanKeys.map((file, idx) => (
                     <li key={idx}>{file.name}</li>
                   ))}
                 </ul>
-              )}
+              )} */}
             </div>
 
             {/* 👇 Logs Section */}
@@ -268,7 +301,9 @@ export default function CreateAndEditMarketPanel({
                   className="grid grid-cols-12 gap-2 items-center mb-2 border p-3 rounded-md"
                 >
                   <div className="col-span-5">
-                    <label className="block text-xs font-medium mb-1">Size</label>
+                    <label className="block text-xs font-medium mb-1">
+                      Size
+                    </label>
                     <Input
                       type="text"
                       placeholder="e.g., 2x3, M, 10sqm"
@@ -279,12 +314,16 @@ export default function CreateAndEditMarketPanel({
                   </div>
 
                   <div className="col-span-5">
-                    <label className="block text-xs font-medium mb-1">Price</label>
+                    <label className="block text-xs font-medium mb-1">
+                      Price
+                    </label>
                     <Input
                       type="number"
                       placeholder="Enter price"
                       value={log.price}
-                      onChange={(e) => updateLog(index, "price", e.target.value)}
+                      onChange={(e) =>
+                        updateLog(index, "price", e.target.value)
+                      }
                     />
                   </div>
 
