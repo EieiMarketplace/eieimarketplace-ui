@@ -32,6 +32,7 @@ export default function CreateAndEditMarketPanel({
     coverImageUrl: "",
     marketPlanKeys: [],
     coverImageFile: null as File | null,
+    marketPlanImageFiles: [] as File[],
     logs: [],
     userid: "",
   });
@@ -68,6 +69,14 @@ export default function CreateAndEditMarketPanel({
     if (marketData.coverImageFile) {
       formData.append("coverImageFile", marketData.coverImageFile);
     }
+    
+    // Append market plan image files
+    if (marketData.marketPlanImageFiles && marketData.marketPlanImageFiles.length > 0) {
+      marketData.marketPlanImageFiles.forEach((file, index) => {
+        formData.append(`marketPlanImageFiles`, file);
+      });
+    }
+    
     formData.append("marketName", marketData.marketName);
     formData.append("address", marketData.address);
     formData.append("coverImageKey", marketData.coverImageKey);
@@ -93,7 +102,7 @@ export default function CreateAndEditMarketPanel({
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "coverImageFile" | "marketPlanKeys" //TODO: marketFile wait to fix
+    field: "coverImageFile" | "marketPlanImageFiles"
   ) => {
     if (!e.target.files) return;
     if (field === "coverImageFile") {
@@ -101,11 +110,11 @@ export default function CreateAndEditMarketPanel({
         ...prev,
         coverImageFile: e.target.files?.[0] || null,
       }));
-    } else {
-      //   setFormData((prev) => ({
-      //     ...prev,
-      //     marketPlanKeys: Array.from(e.target.files || []),
-      //   }));
+    } else if (field === "marketPlanImageFiles") {
+      setFormData((prev) => ({
+        ...prev,
+        marketPlanImageFiles: Array.from(e.target.files || []),
+      }));
     }
   };
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,6 +136,7 @@ export default function CreateAndEditMarketPanel({
       rule: formData.rule,
       userid: userID?.toString()!!,
       coverImageFile: formData.coverImageFile,
+      marketPlanImageFiles: formData.marketPlanImageFiles,
     };
     console.log(payload);
 
@@ -276,20 +286,23 @@ export default function CreateAndEditMarketPanel({
                 type="file"
                 accept="image/*"
                 multiple
-                onChange={(e) => handleFileChange(e, "marketPlanKeys")}
+                onChange={(e) => handleFileChange(e, "marketPlanImageFiles")}
                 className="file:mr-4 file:py-2 file:px-4 
                            file:rounded-md file:border-0 
                            file:text-sm file:font-medium
                            file:bg-blue-600 file:text-white
                            hover:file:bg-blue-700"
               />
-              {/* {formData.marketPlanKeys.length > 0 && ( //TODO: Change to market_plan_file
+              {formData.marketPlanImageFiles && formData.marketPlanImageFiles.length > 0 && (
                 <ul className="text-xs text-gray-500 mt-1 space-y-1">
-                  {formData.marketPlanKeys.map((file, idx) => (
-                    <li key={idx}>{file.name}</li>
+                  {formData.marketPlanImageFiles.map((file, idx) => (
+                    <li key={idx} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                      <span>{file.name}</span>
+                      <span className="text-gray-400">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    </li>
                   ))}
                 </ul>
-              )} */}
+              )}
             </div>
 
             {/* 👇 Logs Section */}

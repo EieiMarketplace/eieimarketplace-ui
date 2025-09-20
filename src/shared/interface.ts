@@ -14,6 +14,7 @@ export interface ApiError {
 
 export interface MarketPlanKey {
   marketPlanKey: string;
+  marketPlanImageUrl?: string;
 }
 
 export interface MarketLog {
@@ -38,6 +39,7 @@ export interface Market {
 
 export interface MarketCreateRequest extends Market {
   coverImageFile?: File | null;
+  marketPlanImageFiles?: File[];
 }
 
 export interface MarketRequestParams {
