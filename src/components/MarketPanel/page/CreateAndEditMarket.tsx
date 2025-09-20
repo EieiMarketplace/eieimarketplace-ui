@@ -28,7 +28,6 @@ export default function CreateAndEditMarketPanel({
     coverImageKey: "",
     detail: "",
     rule: "",
-
     coverImageUrl: "",
     marketPlanKeys: [],
     coverImageFile: null as File | null,
@@ -83,7 +82,7 @@ export default function CreateAndEditMarketPanel({
     formData.append("detail", marketData.detail);
     formData.append("rule", marketData.rule);
     formData.append("userid", marketData.userid);
-
+    formData.append("logs", JSON.stringify(marketData.logs));
     // formData.append( //TODO:
     //   "marketPlanKeys",
     //   JSON.stringify(marketData.marketPlanKeys || [])
@@ -129,7 +128,7 @@ export default function CreateAndEditMarketPanel({
         size: log.size,
         price: log.price,
         user_id: log.user_id,
-        reservation_id: "0",
+        reservation_id: 0,
       })),
 
       detail: formData.detail,
@@ -190,7 +189,12 @@ export default function CreateAndEditMarketPanel({
       ...prev,
       logs: [
         ...prev.logs,
-        { size: "", price: 0, user_id: prev.userid || "", reservation_id: "0" },
+        {
+          size: "",
+          price: 0,
+          user_id: Number(prev.userid) || 0,
+          reservation_id: 0,
+        },
       ],
     }));
   };

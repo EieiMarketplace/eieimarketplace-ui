@@ -20,8 +20,8 @@ export interface MarketPlanKey {
 export interface MarketLog {
   size: string;
   price: number;
-  user_id: string;
-  reservation_id: string;
+  user_id: number;
+  reservation_id: number;
 }
 
 export interface Market {
