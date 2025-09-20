@@ -116,6 +116,38 @@ export default function MarketDetailPanel() {
             </div>
           </div>
 
+          {/* Logs */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-700 mb-3">Logs</h2>
+            {market.logs && market.logs.length > 0 ? (
+              <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                <table className="min-w-full divide-y divide-gray-200 text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left font-medium text-gray-600">#</th>
+                      <th className="px-4 py-2 text-left font-medium text-gray-600">Size</th>
+                      <th className="px-4 py-2 text-left font-medium text-gray-600">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 bg-white">
+                    {market.logs.map((log, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition">
+                        <td className="px-4 py-2 text-gray-700">{index + 1}</td>
+                        <td className="px-4 py-2 text-gray-800 font-medium">{log.size}</td>
+                        <td className="px-4 py-2 text-gray-700">
+                          {log.price.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm">No logs available</p>
+            )}
+          </div>
+
+
           {/* Edit Button */}
           <div className="flex justify-end mt-6">
             <button
