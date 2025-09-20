@@ -9,13 +9,17 @@ import { createMarketService } from "@/services/createMarket";
 import { useEffect } from "react";
 import { getMarketFromId } from "@/services/getMarketFromId";
 import { editMarketService } from "@/services/editMarket";
+import { useSession } from "next-auth/react";
 
 interface CreateAndEditMarketPanelProps {
   editMode: string;
-  Id : string
+  Id: string;
 }
 
-export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEditMarketPanelProps) {
+export default function CreateAndEditMarketPanel({
+  editMode,
+  Id,
+}: CreateAndEditMarketPanelProps) {
   const [formData, setFormData] = useState({
     marketName: "",
     address: "",
@@ -24,8 +28,9 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
     coverImageKey: null as File | null,
     marketPlanKeys: [] as File[],
   });
+  const { data: session } = useSession();
+  const userID = session?.user.id;
 
-  // Check if Id != "" and editMode is Edit, then get data from getMarketFromId(id) and fill the form
   useEffect(() => {
     if (editMode === "Edit" && Id !== "") {
       (async () => {
@@ -36,8 +41,8 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
             address: market.address || "",
             detail: market.detail || "",
             rule: market.rule || "",
-            coverImageKey: null, // File objects can't be set directly; handle as needed
-            marketPlanKeys: [],  // Same as above
+            coverImageKey: null,
+            marketPlanKeys: [],
           });
         } catch (error) {
           console.error("Failed to fetch market data:", error);
@@ -48,17 +53,28 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
 
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: "coverImageKey" | "marketPlanKeys") => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: "coverImageKey" | "marketPlanKeys"
+  ) => {
     if (!e.target.files) return;
     if (field === "coverImageKey") {
-      setFormData((prev) => ({ ...prev, coverImageKey: e.target.files?.[0] || null }));
+      setFormData((prev) => ({
+        ...prev,
+        coverImageKey: e.target.files?.[0] || null,
+      }));
     } else {
-      setFormData((prev) => ({ ...prev, marketPlanKeys: Array.from(e.target.files || []) }));
+      setFormData((prev) => ({
+        ...prev,
+        marketPlanKeys: Array.from(e.target.files || []),
+      }));
     }
   };
 
@@ -74,11 +90,10 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
       logs: [],
       detail: formData.detail,
       rule: formData.rule,
-      userid: "",
+      userid: userID?.toString()!!,
     };
 
-    console.log(editMode, Id);
-    if(editMode === "Create"){
+    if (editMode === "Create") {
       try {
         await createMarketService(payload);
         setPopupMessage("Create market successfully");
@@ -86,7 +101,7 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
         console.error(error);
         setPopupMessage("Fail to create a market");
       }
-    }else{
+    } else {
       try {
         await editMarketService(payload);
         setPopupMessage("Edit Market Successfully");
@@ -95,11 +110,10 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
         setPopupMessage("Fail to edit a market");
       }
     }
-    
   };
 
   function OnPopUpClick(): void {
-    setPopupMessage(null)
+    setPopupMessage(null);
     window.location.href = "/my-market/" + Id;
   }
 
@@ -107,12 +121,16 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
     <div className="relative flex justify-center items-center min-h-screen bg-gray-50 p-6">
       <Card className="w-full max-w-2xl shadow-lg rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">Create a New Market</CardTitle>
+          <CardTitle className="text-xl font-semibold">
+            Create a New Market
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block mb-1 text-sm font-medium">Market Name</label>
+              <label className="block mb-1 text-sm font-medium">
+                Market Name
+              </label>
               <Input
                 type="text"
                 name="marketName"
@@ -162,7 +180,9 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
             </div>
 
             <div>
-              <label className="block mb-1 text-sm font-medium">Cover Image</label>
+              <label className="block mb-1 text-sm font-medium">
+                Cover Image
+              </label>
               <Input
                 type="file"
                 accept="image/*"
@@ -174,12 +194,16 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
                            hover:file:bg-blue-700"
               />
               {formData.coverImageKey && (
-                <p className="text-xs text-gray-500 mt-1">{formData.coverImageKey.name}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.coverImageKey.name}
+                </p>
               )}
             </div>
 
             <div>
-              <label className="block mb-1 text-sm font-medium">Market Plan Images</label>
+              <label className="block mb-1 text-sm font-medium">
+                Market Plan Images
+              </label>
               <Input
                 type="file"
                 accept="image/*"
@@ -202,7 +226,7 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
 
             <Button type="submit" className="w-full">
               {editMode} Market
-              </Button>
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -215,7 +239,7 @@ export default function CreateAndEditMarketPanel({ editMode, Id }: CreateAndEdit
         >
           <div className="bg-white p-6 rounded-lg shadow-lg text-center space-y-4 w-80">
             <p className="text-lg font-medium">{popupMessage}</p>
-            <Button onClick={() => OnPopUpClick() }>Continue</Button>
+            <Button onClick={() => OnPopUpClick()}>Continue</Button>
           </div>
         </div>
       )}
