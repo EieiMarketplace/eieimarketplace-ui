@@ -42,7 +42,7 @@ export default function MyMarketPanel() {
   }, [fetchMarkets]);
 
   return (
-    <div>
+    <div className="flex flex-col h-full w-full">
       <MyMarketHeader
         onSubmit={(values) =>
           setSearchValue({
@@ -56,7 +56,7 @@ export default function MyMarketPanel() {
         }
       />
 
-      <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full">
         {markets.map((market) => (
           <MarketCard market={market} key={market.id} detailPath="my-market" />
         ))}

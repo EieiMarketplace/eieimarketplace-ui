@@ -13,6 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { getMarketFromId } from "@/services/getMarketFromId";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import ImageCard from "@/components/Market/image-card/ui";
 
 export default function MarketDetailPanel() {
   const params = useParams();
@@ -42,18 +50,20 @@ export default function MarketDetailPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 flex justify-center">
-      <Card className="max-w-3xl w-full shadow-xl rounded-2xl overflow-hidden">
+    <div className="min-h-screen bg-gray-100 p-8 flex justify-center w-full">
+      <Card className="max-w-3xl flex flex-col w-full shadow-xl rounded-2xl  overflow-hidden">
         {/* Cover Image */}
         <img
           src={
-            market.coverImageUrl ? market.coverImageUrl : "../images/Taiwan.jpg"
+            market.coverImageUrl
+              ? market.coverImageUrl
+              : "../images/Taiwan.jpg "
           }
           alt={market.marketName || "N/A"}
           className="w-full h-full object-cover"
         />
 
-        <CardContent className="p-8 space-y-6">
+        <CardContent className="w-full p-8 space-y-6">
           {/* Market Name */}
           <h1 className="text-3xl font-bold text-gray-800">
             {market.marketName || "N/A"}
@@ -82,11 +92,72 @@ export default function MarketDetailPanel() {
           </div>
 
           {/* Market Plan Keys */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">
-              Market Plans
-            </h2>
-            <div className="grid grid-cols-1 gap-4">
+          <div className="">
+            <label className="block mb-1 text-sm font-medium">
+              Market Plan
+            </label>
+            <div className="flex content-center justify-center w-full my-5">
+              {market.marketPlanKeys && market.marketPlanKeys.length > 0 ? (
+                <div className="w-full">
+                  <Carousel className="w-full">
+                    <CarouselContent className="h-80">
+                      {market.marketPlanKeys.map((plan, index) => (
+                        <CarouselItem
+                          key={plan.marketPlanImageUrl}
+                          className="flex justify-center"
+                        >
+                          <Dialog key={index}>
+                            <DialogTrigger asChild>
+                              <div className="w-full cursor-pointer">
+                                <ImageCard
+                                  url={plan.marketPlanImageUrl!}
+                                  alt={`plan-${index}`}
+                                />
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent className="sm:!max-w-max">
+                              <VisuallyHidden>
+                                <DialogTitle>
+                                  Market Plan {index + 1}
+                                </DialogTitle>
+                              </VisuallyHidden>
+                              <img
+                                src={
+                                  plan.marketPlanImageUrl ||
+                                  "../images/Market_Plan.jpg"
+                                }
+                                className="h-100 rounded-md"
+                              />
+                            </DialogContent>
+                          </Dialog>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
+                </div>
+              ) : (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <img
+                      src={"../images/Market_Plan.jpg"}
+                      className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition"
+                    />
+                  </DialogTrigger>
+                  <DialogContent className="sm:!max-w-max">
+                    <VisuallyHidden>
+                      <DialogTitle>Market Plan</DialogTitle>
+                    </VisuallyHidden>
+                    <img
+                      src="../images/Market_Plan.jpg"
+                      className="rounded-md"
+                    />
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
+            {/* <div className="grid grid-cols-1 gap-4">
               {market.marketPlanKeys && market.marketPlanKeys.length > 0 ? (
                 market.marketPlanKeys!!.map((plan, index) => (
                   <Dialog key={index}>
@@ -130,7 +201,7 @@ export default function MarketDetailPanel() {
                   </DialogContent>
                 </Dialog>
               )}
-            </div>
+            </div> */}
           </div>
 
           {/* Logs */}
@@ -173,12 +244,12 @@ export default function MarketDetailPanel() {
           </div>
 
           {/* Edit Button */}
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end ">
             <button
               onClick={() => {
                 window.location.href = `/my-market/${id}/edit`;
               }}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 "
             >
               Edit
             </button>

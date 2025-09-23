@@ -10,7 +10,19 @@ import { useEffect } from "react";
 import { getMarketFromId } from "@/services/getMarketFromId";
 import { editMarketService } from "@/services/editMarket";
 import { useSession } from "next-auth/react";
-import { MarketCreateRequest, MarketLog } from "@/shared/interface";
+import {
+  MarketCreateRequest,
+  MarketLog,
+  MarketPlanKey,
+} from "@/shared/interface";
+import ImageCard from "@/components/Market/image-card/ui";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface CreateAndEditMarketPanelProps {
   editMode: string;
@@ -30,8 +42,8 @@ export default function CreateAndEditMarketPanel({
     rule: "",
     coverImageUrl: "",
     marketPlanKeys: [],
-    coverImageFile: null as File | null,
-    marketPlanImageFiles: [] as File[],
+    newCoverImageFile: null as File | null,
+    // marketPlanImageFiles: [] as File[],
     logs: [],
     userid: "",
   });
@@ -65,17 +77,18 @@ export default function CreateAndEditMarketPanel({
   function createMarketFormData(marketData: MarketCreateRequest): FormData {
     const formData = new FormData();
 
-    if (marketData.coverImageFile) {
-      formData.append("coverImageFile", marketData.coverImageFile);
+    if (marketData.newCoverImageFile) {
+      formData.append("coverImageFile", marketData.newCoverImageFile);
     }
-    
-    // Append market plan image files
-    if (marketData.marketPlanImageFiles && marketData.marketPlanImageFiles.length > 0) {
-      marketData.marketPlanImageFiles.forEach((file, index) => {
-        formData.append(`marketPlanImageFiles`, file);
+
+    if (marketData.marketPlanKeys && marketData.marketPlanKeys.length > 0) {
+      marketData.marketPlanKeys.forEach((eachPlan, index) => {
+        if (eachPlan.marketPlanImageFile) {
+          console.log("hello");
+          formData.append(`marketPlanImageFiles`, eachPlan.marketPlanImageFile);
+        }
       });
     }
-    
     formData.append("marketName", marketData.marketName);
     formData.append("address", marketData.address);
     formData.append("coverImageKey", marketData.coverImageKey);
@@ -83,12 +96,6 @@ export default function CreateAndEditMarketPanel({
     formData.append("rule", marketData.rule);
     formData.append("userid", marketData.userid);
     formData.append("logs", JSON.stringify(marketData.logs));
-    // formData.append( //TODO:
-    //   "marketPlanKeys",
-    //   JSON.stringify(marketData.marketPlanKeys || [])
-    // );
-    // formData.append("logs", JSON.stringify(marketData.logs || [])); //TODO: Log
-
     return formData;
   }
 
@@ -101,21 +108,52 @@ export default function CreateAndEditMarketPanel({
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "coverImageFile" | "marketPlanImageFiles"
+    field: "newCoverImageFile" | "marketPlanImageFiles"
   ) => {
     if (!e.target.files) return;
-    if (field === "coverImageFile") {
+    if (field === "newCoverImageFile") {
       setFormData((prev) => ({
         ...prev,
-        coverImageFile: e.target.files?.[0] || null,
+        newCoverImageFile: e.target.files?.[0] || null,
+        coverImageUrl:
+          e.target.files && e.target.files[0]
+            ? URL.createObjectURL(e.target.files[0])
+            : "",
       }));
     } else if (field === "marketPlanImageFiles") {
+      const newMarketPlanKeys: MarketPlanKey[] = Array.from(e.target.files).map(
+        (file, index) => ({
+          marketPlanKey: "",
+          marketPlanImageUrl: URL.createObjectURL(file),
+          marketPlanImageFile: file,
+        })
+      );
+
       setFormData((prev) => ({
         ...prev,
-        marketPlanImageFiles: Array.from(e.target.files || []),
+        marketPlanKeys: [...(prev.marketPlanKeys || []), ...newMarketPlanKeys],
       }));
     }
   };
+
+  const handleDeleteCoverImage = (imageUrl: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      newCoverImageFile: null,
+      coverImageUrl: "",
+    }));
+  };
+
+  const handleDeleteMarketImageKey = (imageUrl: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      marketPlanKeys:
+        prev.marketPlanKeys?.filter(
+          (eachPlanKey) => eachPlanKey.marketPlanImageUrl !== imageUrl
+        ) || [],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -134,13 +172,13 @@ export default function CreateAndEditMarketPanel({
       detail: formData.detail,
       rule: formData.rule,
       userid: userID?.toString()!!,
-      coverImageFile: formData.coverImageFile,
-      marketPlanImageFiles: formData.marketPlanImageFiles,
+      newCoverImageFile: formData.newCoverImageFile,
+      // marketPlanImageFiles: formData.marketPlanImageFiles,
     };
-    console.log(payload);
+    // console.log(payload);
 
     const request: FormData = createMarketFormData(payload);
-    console.log("Request", request);
+    // console.log("Req", request);
     if (editMode === "Create") {
       try {
         await createMarketService(request);
@@ -208,7 +246,7 @@ export default function CreateAndEditMarketPanel({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-4 h-full" onSubmit={handleSubmit}>
             <div>
               <label className="block mb-1 text-sm font-medium">
                 Market Name
@@ -261,31 +299,78 @@ export default function CreateAndEditMarketPanel({
               />
             </div>
 
-            <div>
+            <div className="h-[50%]">
               <label className="block mb-1 text-sm font-medium">
                 Cover Image
               </label>
+              <div className="flex content-center justify-center w-full h-[300px] my-5">
+                {formData.coverImageUrl ? (
+                  <ImageCard
+                    url={`${formData.coverImageUrl}`}
+                    alt={"coverImage"}
+                    handleDeleteImageAndFile={handleDeleteCoverImage}
+                  />
+                ) : (
+                  <span className="content-center font-semibold">
+                    No Cover Image
+                  </span>
+                )}
+              </div>
+
               <Input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleFileChange(e, "coverImageFile")}
+                onChange={(e) => handleFileChange(e, "newCoverImageFile")}
                 className="file:mr-4 file:py-2 file:px-4 
                            file:rounded-md file:border-0 
                            file:text-sm file:font-medium
                            file:bg-blue-600 file:text-white
+                           cursor-pointer
                            hover:file:bg-blue-700"
               />
-              {formData.coverImageFile && (
+              {formData.newCoverImageFile && (
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.coverImageFile.name}
+                  {formData.newCoverImageFile.name}
                 </p>
               )}
             </div>
 
-            <div>
+            <div className="h-[50%]">
               <label className="block mb-1 text-sm font-medium">
                 Market Plan Images
               </label>
+              <div className="flex content-center justify-center w-full my-5">
+                {formData.marketPlanKeys &&
+                formData.marketPlanKeys.length > 0 ? (
+                  <div className="w-full">
+                    <Carousel className="w-full">
+                      <CarouselContent className="h-80">
+                        {formData.marketPlanKeys.map(
+                          (eachMarketPlan, index) => (
+                            <CarouselItem
+                              key={eachMarketPlan.marketPlanImageUrl}
+                            >
+                              <ImageCard
+                                url={`${eachMarketPlan.marketPlanImageUrl}`}
+                                alt={`${eachMarketPlan.marketPlanImageUrl}`}
+                                handleDeleteImageAndFile={
+                                  handleDeleteMarketImageKey
+                                }
+                              />
+                            </CarouselItem>
+                          )
+                        )}
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
+                  </div>
+                ) : (
+                  <span className="content-center font-semibold">
+                    No Market Plan Images
+                  </span>
+                )}
+              </div>
               <Input
                 type="file"
                 accept="image/*"
@@ -294,19 +379,27 @@ export default function CreateAndEditMarketPanel({
                 className="file:mr-4 file:py-2 file:px-4 
                            file:rounded-md file:border-0 
                            file:text-sm file:font-medium
-                           file:bg-blue-600 file:text-white
-                           hover:file:bg-blue-700"
+                           file:bg-blue-600 file:text-white file:items-center file:content-center
+                           items-center
+                           cursor-pointer
+                           hover:file:bg-blue-700 hover:file:cursor-ponter"
               />
-              {formData.marketPlanImageFiles && formData.marketPlanImageFiles.length > 0 && (
-                <ul className="text-xs text-gray-500 mt-1 space-y-1">
-                  {formData.marketPlanImageFiles.map((file, idx) => (
-                    <li key={idx} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                      <span>{file.name}</span>
-                      <span className="text-gray-400">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {formData.marketPlanKeys &&
+                formData.marketPlanKeys.length > 0 && (
+                  <ul className="text-xs text-gray-500 mt-1 space-y-1">
+                    {/* {formData.marketPlanKeys.map((eachMarketPlan, idx) => (
+                      <li
+                        key={idx}
+                        className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                      >
+                        <span>{eachMarketPlan.marketPlanImageFile.name}</span>
+                        <span className="text-gray-400">
+                          ({(eachMarketPlan.marketPlanImageFile.size / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                      </li>
+                    ))} */}
+                  </ul>
+                )}
             </div>
 
             {/* 👇 Logs Section */}

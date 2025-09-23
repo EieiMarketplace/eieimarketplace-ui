@@ -16,19 +16,21 @@ export function MarketCard({
   return (
     <Card
       key={market.id}
-      className="!py-0 !space-y-0 !gap-0 overflow-hidden shadow-lg cursor-pointer hover:-translate-y-1 hover:shadow-2xl"
+      className="!py-0 !space-y-0 !gap-0 overflow-hidden shadow-lg cursor-pointer hover:-translate-y-1 hover:shadow-2xl h-[400px]"
       onClick={(e) => {
         e.preventDefault();
         router.push(`/${detailPath}/${market.id}`);
       }}
     >
-      <img
-        src={
-          market.coverImageUrl ? market.coverImageUrl : "./images/Taiwan.jpg"
-        }
-        alt={market.marketName || NOT_FOUND}
-        className="w-full h-[50%] object-cover"
-      />
+      <div className="h-[50%] w-full">
+        <img
+          src={
+            market.coverImageUrl ? market.coverImageUrl : "./images/Taiwan.jpg"
+          }
+          alt={market.marketName || NOT_FOUND}
+          className="w-full h-full object-cover"
+        />
+      </div>
       <div className="bg-green-600 text-white p-4 font-semibold text-xl">
         {market.marketName || NOT_FOUND}
       </div>
@@ -37,7 +39,9 @@ export function MarketCard({
           <MapPin />
           {market.address || NOT_FOUND}
         </div>
-        <p className="mt-2 text-gray-600">{market.detail || NOT_FOUND}</p>
+        <p className="mt-2 text-gray-600 truncate">
+          {market.detail || NOT_FOUND}
+        </p>
       </CardContent>
     </Card>
   );
