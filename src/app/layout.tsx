@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import NextAuthProvider from "../providers/NextAuthProvider";
 import { LoadingProvider } from "@/providers/LoadingProvider";
 import { Inter } from "next/font/google";
+import ReduxProvider from "@/providers/ReduxProvider";
+
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 export default async function RootLayout({
   children,
@@ -16,7 +18,9 @@ export default async function RootLayout({
     <html lang="en" className={inter.className}>
       <body className="min-h-screen bg-[#F9F8F9] ">
         <NextAuthProvider session={nextAuthSession}>
-          <LoadingProvider>{children}</LoadingProvider>
+          <ReduxProvider>
+            <LoadingProvider>{children}</LoadingProvider>
+          </ReduxProvider>
         </NextAuthProvider>
       </body>
     </html>

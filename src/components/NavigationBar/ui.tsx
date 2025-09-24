@@ -22,9 +22,12 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { useAppSelector } from "@/shared/hook";
 
 export default function NavigationBar() {
   const { data: session, status } = useSession();
+  const userInfo = useAppSelector((state) => state.userInfoSlice);
+  console.log("User", userInfo);
   if (status === "loading") {
     return null;
   }
@@ -47,7 +50,7 @@ export default function NavigationBar() {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <span className="text-center text-xl font-semibold cursor-pointer hover:underline">
-                {session.user.email}
+                {userInfo.userInfo.email}
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

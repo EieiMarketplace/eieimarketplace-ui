@@ -52,3 +52,12 @@ export interface MarketLog {
   user_id: number;
   reservation_id: number;
 }
+
+export interface UserInfo {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  role: string;
+}

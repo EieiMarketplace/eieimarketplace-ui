@@ -15,10 +15,17 @@ import { Button } from "../ui/button";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useLoading } from "@/shared/context/Loading";
+import { updateUserInfo } from "@/shared/slice/userInfoSlice";
+import { useAppDispatch, useAppSelector } from "@/shared/hook";
+import { userInfoService } from "@/services/getUserInfo";
 
 export default function LoginPanel() {
   const router = useRouter();
   const { setLoading } = useLoading();
+
+  // const userInfo = useAppSelector((state) => state.userInfoSlice);
+  const dispatch = useAppDispatch();
+
   const formSchema = z.object({
     email: z.string(),
     password: z.string(),
@@ -68,6 +75,9 @@ export default function LoginPanel() {
           message: "Username or password is incorrect",
         });
       } else {
+        const userInfoData = await userInfoService.getUserInfo();
+        console.log("userData", userInfoData);
+        dispatch(updateUserInfo(userInfoData));
         router.push("/");
       }
     } catch (error) {

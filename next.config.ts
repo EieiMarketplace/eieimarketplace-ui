@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "eiei-swarchitecture.s3.amazonaws.com",
-        pathname: "/**", // อนุญาตทุก path ใน bucket
+        pathname: "/**",
       },
     ],
   },
