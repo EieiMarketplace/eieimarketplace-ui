@@ -69,6 +69,22 @@ export default function MarketDetailPanel() {
             {market.marketName || "N/A"}
           </h1>
 
+          <div className="flex items-center gap-2">
+            {/* Market Type */}
+            <span className={`text-sm ${ market.marketType == "Market" ? "bg-orange-500" : "bg-blue-700"} text-white px-2 py-1 rounded-full`}>
+              {market.marketType || "Market"}
+            </span>
+
+            {/* isOpen Badge */}
+            <span
+              className={`text-sm px-2 py-1 rounded-full font-bold ${
+                market.isOpen ? "bg-green-300 text-green-800" : "bg-red-300 text-red-800"
+              }`}
+            >
+              {market.isOpen ? "Opened" : "Closed"}
+            </span>
+          </div>
+
           {/* Address */}
           <div className="flex items-center text-gray-600 gap-2">
             <MapPin className="h-5 w-5" />
@@ -216,6 +232,9 @@ export default function MarketDetailPanel() {
                         #
                       </th>
                       <th className="px-4 py-2 text-left font-medium text-gray-600">
+                        Name
+                      </th>
+                      <th className="px-4 py-2 text-left font-medium text-gray-600">
                         Size
                       </th>
                       <th className="px-4 py-2 text-left font-medium text-gray-600">
@@ -227,6 +246,9 @@ export default function MarketDetailPanel() {
                     {market.logs.map((log, index) => (
                       <tr key={index} className="hover:bg-gray-50 transition">
                         <td className="px-4 py-2 text-gray-700">{index + 1}</td>
+                        <td className="px-4 py-2 text-gray-800 font-medium">
+                          {log.name}
+                        </td>
                         <td className="px-4 py-2 text-gray-800 font-medium">
                           {log.size}
                         </td>

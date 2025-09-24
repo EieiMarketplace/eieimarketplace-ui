@@ -46,6 +46,8 @@ export default function CreateAndEditMarketPanel({
     // marketPlanImageFiles: [] as File[],
     logs: [],
     userid: "",
+    isOpen: false,
+    marketType: "Market"
   });
   const { data: session } = useSession();
   const userID = session?.user.id;
@@ -62,10 +64,13 @@ export default function CreateAndEditMarketPanel({
             detail: market.detail || "",
             rule: market.rule || "",
             coverImageKey: market.coverImageKey,
-            marketPlanKeys: [],
+            marketPlanKeys: market.marketPlanKeys || [],
             logs: market.logs || [],
+            deletedMarketKeys: [],
             userid: market.userid,
             coverImageUrl: market.coverImageUrl,
+            isOpen: market.isOpen,
+            marketType: market.marketType
           });
         } catch (error) {
           console.error("Failed to fetch market data:", error);
@@ -81,14 +86,28 @@ export default function CreateAndEditMarketPanel({
       formData.append("coverImageFile", marketData.newCoverImageFile);
     }
 
-    if (marketData.marketPlanKeys && marketData.marketPlanKeys.length > 0) {
-      marketData.marketPlanKeys.forEach((eachPlan, index) => {
-        if (eachPlan.marketPlanImageFile) {
-          console.log("hello");
-          formData.append(`marketPlanImageFiles`, eachPlan.marketPlanImageFile);
-        }
-      });
+      if (marketData.marketPlanKeys && marketData.marketPlanKeys.length > 0) {
+        // Upload new files
+        marketData.marketPlanKeys.forEach((eachPlan) => {
+          if (eachPlan.marketPlanImageFile) {
+            formData.append("marketPlanImageFiles", eachPlan.marketPlanImageFile);
+          }
+        });
+        // Send all keys as JSON
+        const keysArray = marketData.marketPlanKeys
+          .map((plan) => plan.marketPlanKey)
+          .filter(Boolean);
+        formData.append("marketPlanKeys", JSON.stringify(keysArray));
+      }
+    
+      console.log(marketData.deletedMarketKeys)
+    if (marketData.deletedMarketKeys && marketData.deletedMarketKeys.length > 0) {
+      const filteredKeys = marketData.deletedMarketKeys.filter((key) => key.trim() !== "");
+      if (filteredKeys.length > 0) {
+        formData.append("deletedMarketKeys", JSON.stringify(filteredKeys));
+      }
     }
+
     formData.append("marketName", marketData.marketName);
     formData.append("address", marketData.address);
     formData.append("coverImageKey", marketData.coverImageKey);
@@ -96,16 +115,17 @@ export default function CreateAndEditMarketPanel({
     formData.append("rule", marketData.rule);
     formData.append("userid", marketData.userid);
     formData.append("logs", JSON.stringify(marketData.logs));
+    formData.append("isOpen", String(marketData.isOpen));
+    formData.append("marketType", marketData.marketType);
     return formData;
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
+const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: "newCoverImageFile" | "marketPlanImageFiles"
@@ -144,41 +164,53 @@ export default function CreateAndEditMarketPanel({
     }));
   };
 
-  const handleDeleteMarketImageKey = (imageUrl: string) => {
-    setFormData((prev) => ({
+const handleDeleteMarketImageKey = (imageUrl: string) => {
+  setFormData((prev) => {
+    // Find the plan key of the image to delete
+    const deletedKeys: string[] = prev.marketPlanKeys
+      ?.filter((plan) => plan.marketPlanImageUrl === imageUrl)
+      .map((plan) => plan.marketPlanKey) || [];
+
+    return {
       ...prev,
-      marketPlanKeys:
-        prev.marketPlanKeys?.filter(
-          (eachPlanKey) => eachPlanKey.marketPlanImageUrl !== imageUrl
-        ) || [],
-    }));
-  };
+      // Remove the plan from marketPlanKeys
+      marketPlanKeys: prev.marketPlanKeys?.filter(
+        (plan) => plan.marketPlanImageUrl !== imageUrl
+      ) || [],
+      // Append deleted keys to deletedKey array
+      deletedMarketKeys: [...(prev.deletedMarketKeys || []), ...deletedKeys],
+    };
+  });
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload: MarketCreateRequest = {
-      marketName: formData.marketName,
-      address: formData.address,
-      coverImageKey: formData.coverImageKey,
-      marketPlanKeys: formData.marketPlanKeys,
-      logs: formData.logs.map((log: MarketLog) => ({
-        size: log.size,
-        price: log.price,
-        user_id: log.user_id,
-        reservation_id: 0,
-      })),
-
-      detail: formData.detail,
-      rule: formData.rule,
-      userid: userID?.toString()!!,
-      newCoverImageFile: formData.newCoverImageFile,
-      // marketPlanImageFiles: formData.marketPlanImageFiles,
-    };
-    // console.log(payload);
+      const payload: MarketCreateRequest = {
+        id: Id, // make sure this is set for edit
+        marketName: formData.marketName,
+        address: formData.address,
+        coverImageKey: formData.coverImageKey,
+        marketPlanKeys: formData.marketPlanKeys,
+        deletedMarketKeys: formData.deletedMarketKeys,
+        logs: formData.logs.map((log: MarketLog) => ({
+          name: log.name,
+          size: log.size,
+          price: Number(log.price),
+          user_id: Number(log.user_id ?? userID), // fallback to logged-in userID
+          reservation_id: 0,
+        })),
+        detail: formData.detail,
+        rule: formData.rule,
+        userid: userID?.toString()!!,
+        newCoverImageFile: formData.newCoverImageFile,
+        isOpen: formData.isOpen || false,
+        marketType: formData.marketType || "Market",
+      };
 
     const request: FormData = createMarketFormData(payload);
     // console.log("Req", request);
+    console.log([...request.entries()]);
     if (editMode === "Create") {
       try {
         await createMarketService(request);
@@ -189,7 +221,7 @@ export default function CreateAndEditMarketPanel({
       }
     } else {
       try {
-        await editMarketService(payload);
+        await editMarketService(Id, request);
         setPopupMessage("Edit Market Successfully");
       } catch (error) {
         console.error(error);
@@ -203,7 +235,7 @@ export default function CreateAndEditMarketPanel({
     // window.location.href = "/my-market/" + Id;
   }
 
-  const updateLog = (index: number, field: "size" | "price", value: string) => {
+  const updateLog = (index: number, field: "size" | "price" | "name", value: string) => {
     setFormData((prev) => {
       const newLogs = [...prev.logs];
       if (field === "price") {
@@ -228,6 +260,7 @@ export default function CreateAndEditMarketPanel({
       logs: [
         ...prev.logs,
         {
+          name: "",
           size: "",
           price: 0,
           user_id: Number(prev.userid) || 0,
@@ -242,7 +275,7 @@ export default function CreateAndEditMarketPanel({
       <Card className="w-full max-w-2xl shadow-lg rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">
-            Create a New Market
+            {editMode} Market
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -402,7 +435,7 @@ export default function CreateAndEditMarketPanel({
                 )}
             </div>
 
-            {/* 👇 Logs Section */}
+            {/* Logs Section */}
             <div>
               <label className="block mb-2 text-sm font-medium">Logs</label>
               {formData.logs.map((log, index) => (
@@ -410,7 +443,20 @@ export default function CreateAndEditMarketPanel({
                   key={index}
                   className="grid grid-cols-12 gap-2 items-center mb-2 border p-3 rounded-md"
                 >
-                  <div className="col-span-5">
+                  <div className="col-span-3">
+                    <label className="block text-xs font-medium mb-1">
+                      Name
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="log name..."
+                      value={log.name}
+                      onChange={(e) => updateLog(index, "name", e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="col-span-3">
                     <label className="block text-xs font-medium mb-1">
                       Size
                     </label>
@@ -423,7 +469,7 @@ export default function CreateAndEditMarketPanel({
                     />
                   </div>
 
-                  <div className="col-span-5">
+                  <div className="col-span-3">
                     <label className="block text-xs font-medium mb-1">
                       Price
                     </label>
@@ -458,6 +504,59 @@ export default function CreateAndEditMarketPanel({
                 + Add Log
               </Button>
             </div>
+            
+            {/* Type Section */}
+            <div>
+              <label className="block mb-1 text-sm font-medium">
+                Market Type
+              </label>
+              <select
+                name="marketType"
+                value={formData.marketType}
+                onChange={handleChange}
+                required
+                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="Market">Market</option>
+                <option value="Event">Event</option>
+              </select>
+            </div>
+            
+            {editMode == "Edit" ? 
+              <div className="mt-4">
+                <label className="block mb-1 text-sm font-medium text-gray-700">
+                  Market Status
+                </label>
+                <div
+                  className="inline-flex items-center bg-gray-200 rounded-full p-1 w-max cursor-pointer select-none"
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, isOpen: !prev.isOpen }))
+                  }
+                >
+                  <span
+                    className={`px-4 py-1 rounded-full font-medium text-sm transition-all ${
+                      formData.isOpen
+                        ? "bg-green-600 text-white"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    Opened
+                  </span>
+                  <span
+                    className={`px-4 py-1 rounded-full font-medium text-sm transition-all ${
+                      !formData.isOpen
+                        ? "bg-red-600 text-white"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    Closed
+                  </span>
+                </div>
+              </div>
+
+
+              : <></>
+            }
 
             <Button type="submit" className="w-full">
               {editMode} Market
