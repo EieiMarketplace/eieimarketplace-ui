@@ -24,11 +24,14 @@ export interface Market {
   address: string;
   coverImageKey: string;
   marketPlanKeys?: MarketPlanKey[];
+  deletedMarketKeys?: string[];
   logs: MarketLog[];
   detail: string;
   rule: string;
   userid: string;
   coverImageUrl?: string;
+  isOpen: boolean;
+  marketType: string;
 }
 
 export interface MarketCreateRequest extends Market {
@@ -43,6 +46,7 @@ export interface MarketPlanKey {
 }
 
 export interface MarketLog {
+  name: string;
   size: string;
   price: number;
   user_id: number;
