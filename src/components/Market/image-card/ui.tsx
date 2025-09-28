@@ -8,7 +8,7 @@ export default function ImageCard({
 }: {
   url: string;
   alt: string;
-  handleDeleteImageAndFile?: Function;
+  handleDeleteImageAndFile?: (url: string) => void;
 }) {
   const onDelete = () => {
     if (handleDeleteImageAndFile) {

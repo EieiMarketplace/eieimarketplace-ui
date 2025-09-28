@@ -19,44 +19,49 @@ import { registerService } from "@/services/register";
 export default function RegisterPanel() {
   const router = useRouter();
   const { setLoading } = useLoading();
-  
-  const formSchema = z.object({
-    email: z
-      .string()
-      .min(1, "Email is required")
-      .email("Please use a valid Email address"),
-    first_name: z
-      .string()
-      .min(1, "First name is required")
-      .max(50, "First name must be 1-50 characters"),
-    last_name: z
-      .string()
-      .min(1, "Last name is required")
-      .max(50, "Last name must be 1-50 characters"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(100, "Password must be 8-100 characters")
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/\d/, "Password must contain at least one digit")
-      .regex(/[!+-_=@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character"),
-    confirm_password: z.string().min(1, "Please confirm your password"),
-    phone_number: z
-      .string()
-      .min(10, "Please enter a valid phone number")
-      .max(15, "Please enter a valid phone number")
-      .regex(/^[0-9]{10,15}$/, "Please enter a valid phone number"),
-    role: z
-      .string()
-      .min(1, "Please select a role")
-      .refine((val) => ["vendor", "organizer"].includes(val), {
-        message: "Role must be 'vendor' or 'organizer'",
-      }),
-  }).refine((data) => data.password === data.confirm_password, {
-    message: "Passwords don't match",
-    path: ["confirm_password"],
-  });
+
+  const formSchema = z
+    .object({
+      email: z
+        .string()
+        .min(1, "Email is required")
+        .email("Please use a valid Email address"),
+      first_name: z
+        .string()
+        .min(1, "First name is required")
+        .max(50, "First name must be 1-50 characters"),
+      last_name: z
+        .string()
+        .min(1, "Last name is required")
+        .max(50, "Last name must be 1-50 characters"),
+      password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .max(100, "Password must be 8-100 characters")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/\d/, "Password must contain at least one digit")
+        .regex(
+          /[!+-_=@#$%^&*(),.?":{}|<>]/,
+          "Password must contain at least one special character"
+        ),
+      confirm_password: z.string().min(1, "Please confirm your password"),
+      phone_number: z
+        .string()
+        .min(10, "Please enter a valid phone number")
+        .max(15, "Please enter a valid phone number")
+        .regex(/^[0-9]{10,15}$/, "Please enter a valid phone number"),
+      role: z
+        .string()
+        .min(1, "Please select a role")
+        .refine((val) => ["vendor", "organizer"].includes(val), {
+          message: "Role must be 'vendor' or 'organizer'",
+        }),
+    })
+    .refine((data) => data.password === data.confirm_password, {
+      message: "Passwords don't match",
+      path: ["confirm_password"],
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,7 +94,7 @@ export default function RegisterPanel() {
       }
     } catch (error: any) {
       console.error("Registration error:", error);
-      
+
       // Handle specific error messages
       if (error.message?.includes("Email already registered")) {
         form.setError("email", {

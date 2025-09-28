@@ -16,14 +16,13 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useLoading } from "@/shared/context/Loading";
 import { updateUserInfo } from "@/shared/slice/userInfoSlice";
-import { useAppDispatch, useAppSelector } from "@/shared/hook";
+import { useAppDispatch } from "@/shared/hook";
 import { userInfoService } from "@/services/getUserInfo";
 
 export default function LoginPanel() {
   const router = useRouter();
   const { setLoading } = useLoading();
 
-  // const userInfo = useAppSelector((state) => state.userInfoSlice);
   const dispatch = useAppDispatch();
 
   const formSchema = z.object({

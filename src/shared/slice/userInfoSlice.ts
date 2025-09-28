@@ -1,5 +1,6 @@
-import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UserInfo } from "../interface";
+import { PURGE } from "redux-persist";
 
 type UserState = {
   userInfo: UserInfo;
@@ -24,18 +25,10 @@ const userInfoSlice = createSlice({
       state.userInfo = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(PURGE, () => initialState);
+  },
 });
 
 export const { updateUserInfo } = userInfoSlice.actions;
 export default userInfoSlice.reducer;
-
-// // Can still subscribe to the store
-// store.subscribe(() => console.log(store.getState()));
-
-// // Still pass action objects to `dispatch`, but they're created for us
-// store.dispatch(incremented());
-// // {value: 1}
-// store.dispatch(incremented());
-// // {value: 2}
-// store.dispatch(decremented());
-// // {value: 1}

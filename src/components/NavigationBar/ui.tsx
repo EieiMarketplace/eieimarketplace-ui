@@ -15,7 +15,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -23,6 +22,7 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useAppSelector } from "@/shared/hook";
+import { persistor } from "@/shared/store";
 
 export default function NavigationBar() {
   const { data: session, status } = useSession();
@@ -71,7 +71,14 @@ export default function NavigationBar() {
                       <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                       </DialogClose>
-                      <Button onClick={() => signOut()}>Confirm</Button>
+                      <Button
+                        onClick={() => {
+                          persistor.purge();
+                          signOut();
+                        }}
+                      >
+                        Confirm
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>

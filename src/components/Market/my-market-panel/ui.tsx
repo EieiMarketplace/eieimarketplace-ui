@@ -18,7 +18,7 @@ export default function MyMarketPanel() {
     market_name: "",
     address: "",
     detail: "",
-    user_id: userID!!,
+    user_id: userID!,
     limit: "10",
     offset: "0",
   });
@@ -49,7 +49,7 @@ export default function MyMarketPanel() {
             market_name: values.search,
             address: values.search,
             detail: values.search,
-            user_id: userID!!,
+            user_id: userID!,
             limit: "10",
             offset: "0",
           })

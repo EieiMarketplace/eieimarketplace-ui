@@ -33,7 +33,7 @@ export default function MarketDetailPanel() {
       try {
         const data = await getMarketFromId(id);
         setMarket(data);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Failed to fetch");
         //console.error("Failed to fetch market detail:", err);
       }

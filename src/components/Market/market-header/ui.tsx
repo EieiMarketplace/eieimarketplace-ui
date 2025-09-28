@@ -6,7 +6,7 @@ export default function MarketHeader({
   setSearch,
 }: {
   search: string;
-  setSearch: Function;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
 }) {
   return (
     <div className="p-6 space-y-2">

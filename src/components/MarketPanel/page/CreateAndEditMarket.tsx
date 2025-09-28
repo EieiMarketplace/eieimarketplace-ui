@@ -142,7 +142,7 @@ const handleChange = (
       }));
     } else if (field === "marketPlanImageFiles") {
       const newMarketPlanKeys: MarketPlanKey[] = Array.from(e.target.files).map(
-        (file, index) => ({
+        (file, _) => ({
           marketPlanKey: "",
           marketPlanImageUrl: URL.createObjectURL(file),
           marketPlanImageFile: file,
@@ -156,7 +156,7 @@ const handleChange = (
     }
   };
 
-  const handleDeleteCoverImage = (imageUrl: string) => {
+  const handleDeleteCoverImage = (_: string) => {
     setFormData((prev) => ({
       ...prev,
       newCoverImageFile: null,
@@ -378,21 +378,17 @@ const handleDeleteMarketImageKey = (imageUrl: string) => {
                   <div className="w-full">
                     <Carousel className="w-full">
                       <CarouselContent className="h-80">
-                        {formData.marketPlanKeys.map(
-                          (eachMarketPlan, index) => (
-                            <CarouselItem
-                              key={eachMarketPlan.marketPlanImageUrl}
-                            >
-                              <ImageCard
-                                url={`${eachMarketPlan.marketPlanImageUrl}`}
-                                alt={`${eachMarketPlan.marketPlanImageUrl}`}
-                                handleDeleteImageAndFile={
-                                  handleDeleteMarketImageKey
-                                }
-                              />
-                            </CarouselItem>
-                          )
-                        )}
+                        {formData.marketPlanKeys.map((eachMarketPlan, _) => (
+                          <CarouselItem key={eachMarketPlan.marketPlanImageUrl}>
+                            <ImageCard
+                              url={`${eachMarketPlan.marketPlanImageUrl}`}
+                              alt={`${eachMarketPlan.marketPlanImageUrl}`}
+                              handleDeleteImageAndFile={
+                                handleDeleteMarketImageKey
+                              }
+                            />
+                          </CarouselItem>
+                        ))}
                       </CarouselContent>
                       <CarouselPrevious />
                       <CarouselNext />
