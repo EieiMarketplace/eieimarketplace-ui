@@ -1,5 +1,3 @@
-"use client";
-
 import MarketPanel from "@/components/Market/market-panel/ui";
 
 export default function MarketListPage() {

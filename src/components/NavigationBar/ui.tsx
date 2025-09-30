@@ -23,6 +23,7 @@ import {
 import { Button } from "../ui/button";
 import { useAppSelector } from "@/shared/hook";
 import { persistor } from "@/shared/store";
+import { userInfoService } from "@/services/getUserInfo";
 
 export default function NavigationBar() {
   const { data: session, status } = useSession();
@@ -73,8 +74,9 @@ export default function NavigationBar() {
                       </DialogClose>
                       <Button
                         onClick={() => {
-                          persistor.purge();
+                          userInfoService.logout();
                           signOut();
+                          persistor.purge();
                         }}
                       >
                         Confirm
