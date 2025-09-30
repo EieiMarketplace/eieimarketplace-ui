@@ -47,10 +47,11 @@ export default function CreateAndEditMarketPanel({
     logs: [],
     userid: "",
     isOpen: false,
-    marketType: "Market"
+    marketType: "Market",
   });
   const { data: session } = useSession();
   const userID = session?.user.id;
+  const token = session?.user.token!;
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export default function CreateAndEditMarketPanel({
             userid: market.userid,
             coverImageUrl: market.coverImageUrl,
             isOpen: market.isOpen,
-            marketType: market.marketType
+            marketType: market.marketType,
           });
         } catch (error) {
           console.error("Failed to fetch market data:", error);
@@ -86,23 +87,28 @@ export default function CreateAndEditMarketPanel({
       formData.append("coverImageFile", marketData.newCoverImageFile);
     }
 
-      if (marketData.marketPlanKeys && marketData.marketPlanKeys.length > 0) {
-        // Upload new files
-        marketData.marketPlanKeys.forEach((eachPlan) => {
-          if (eachPlan.marketPlanImageFile) {
-            formData.append("marketPlanImageFiles", eachPlan.marketPlanImageFile);
-          }
-        });
-        // Send all keys as JSON
-        const keysArray = marketData.marketPlanKeys
-          .map((plan) => plan.marketPlanKey)
-          .filter(Boolean);
-        formData.append("marketPlanKeys", JSON.stringify(keysArray));
-      }
-    
-      console.log(marketData.deletedMarketKeys)
-    if (marketData.deletedMarketKeys && marketData.deletedMarketKeys.length > 0) {
-      const filteredKeys = marketData.deletedMarketKeys.filter((key) => key.trim() !== "");
+    if (marketData.marketPlanKeys && marketData.marketPlanKeys.length > 0) {
+      // Upload new files
+      marketData.marketPlanKeys.forEach((eachPlan) => {
+        if (eachPlan.marketPlanImageFile) {
+          formData.append("marketPlanImageFiles", eachPlan.marketPlanImageFile);
+        }
+      });
+      // Send all keys as JSON
+      const keysArray = marketData.marketPlanKeys
+        .map((plan) => plan.marketPlanKey)
+        .filter(Boolean);
+      formData.append("marketPlanKeys", JSON.stringify(keysArray));
+    }
+
+    console.log(marketData.deletedMarketKeys);
+    if (
+      marketData.deletedMarketKeys &&
+      marketData.deletedMarketKeys.length > 0
+    ) {
+      const filteredKeys = marketData.deletedMarketKeys.filter(
+        (key) => key.trim() !== ""
+      );
       if (filteredKeys.length > 0) {
         formData.append("deletedMarketKeys", JSON.stringify(filteredKeys));
       }
@@ -115,17 +121,19 @@ export default function CreateAndEditMarketPanel({
     formData.append("rule", marketData.rule);
     formData.append("userid", marketData.userid);
     formData.append("logs", JSON.stringify(marketData.logs));
-    formData.append("isOpen", String(marketData.isOpen));
+    formData.append("isOpen", marketData.isOpen.toString());
     formData.append("marketType", marketData.marketType);
     return formData;
   }
 
-const handleChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-) => {
-  const { name, value } = e.target;
-  setFormData((prev) => ({ ...prev, [name]: value }));
-};
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: "newCoverImageFile" | "marketPlanImageFiles"
@@ -164,56 +172,58 @@ const handleChange = (
     }));
   };
 
-const handleDeleteMarketImageKey = (imageUrl: string) => {
-  setFormData((prev) => {
-    // Find the plan key of the image to delete
-    const deletedKeys: string[] = prev.marketPlanKeys
-      ?.filter((plan) => plan.marketPlanImageUrl === imageUrl)
-      .map((plan) => plan.marketPlanKey) || [];
+  const handleDeleteMarketImageKey = (imageUrl: string) => {
+    setFormData((prev) => {
+      // Find the plan key of the image to delete
+      const deletedKeys: string[] =
+        prev.marketPlanKeys
+          ?.filter((plan) => plan.marketPlanImageUrl === imageUrl)
+          .map((plan) => plan.marketPlanKey) || [];
 
-    return {
-      ...prev,
-      // Remove the plan from marketPlanKeys
-      marketPlanKeys: prev.marketPlanKeys?.filter(
-        (plan) => plan.marketPlanImageUrl !== imageUrl
-      ) || [],
-      // Append deleted keys to deletedKey array
-      deletedMarketKeys: [...(prev.deletedMarketKeys || []), ...deletedKeys],
-    };
-  });
-};
+      return {
+        ...prev,
+        // Remove the plan from marketPlanKeys
+        marketPlanKeys:
+          prev.marketPlanKeys?.filter(
+            (plan) => plan.marketPlanImageUrl !== imageUrl
+          ) || [],
+        // Append deleted keys to deletedKey array
+        deletedMarketKeys: [...(prev.deletedMarketKeys || []), ...deletedKeys],
+      };
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-      const payload: MarketCreateRequest = {
-        id: Id, // make sure this is set for edit
-        marketName: formData.marketName,
-        address: formData.address,
-        coverImageKey: formData.coverImageKey,
-        marketPlanKeys: formData.marketPlanKeys,
-        deletedMarketKeys: formData.deletedMarketKeys,
-        logs: formData.logs.map((log: MarketLog) => ({
-          name: log.name,
-          size: log.size,
-          price: Number(log.price),
-          user_id: Number(log.user_id ?? userID), // fallback to logged-in userID
-          reservation_id: 0,
-        })),
-        detail: formData.detail,
-        rule: formData.rule,
-        userid: userID?.toString()!!,
-        newCoverImageFile: formData.newCoverImageFile,
-        isOpen: formData.isOpen || false,
-        marketType: formData.marketType || "Market",
-      };
+    const payload: MarketCreateRequest = {
+      id: Id, // make sure this is set for edit
+      marketName: formData.marketName,
+      address: formData.address,
+      coverImageKey: formData.coverImageKey,
+      marketPlanKeys: formData.marketPlanKeys,
+      deletedMarketKeys: formData.deletedMarketKeys,
+      logs: formData.logs.map((log: MarketLog) => ({
+        name: log.name,
+        size: log.size,
+        price: Number(log.price),
+        user_id: "", // fallback to logged-in userID
+        reservation_id: "",
+      })),
+      detail: formData.detail,
+      rule: formData.rule,
+      userid: userID?.toString()!!,
+      newCoverImageFile: formData.newCoverImageFile,
+      isOpen: formData.isOpen || false,
+      marketType: formData.marketType || "Market",
+    };
 
     const request: FormData = createMarketFormData(payload);
     // console.log("Req", request);
     console.log([...request.entries()]);
     if (editMode === "Create") {
       try {
-        await createMarketService(request);
+        await createMarketService(request, token);
         setPopupMessage("Create market successfully");
       } catch (error) {
         console.error(error);
@@ -221,7 +231,7 @@ const handleDeleteMarketImageKey = (imageUrl: string) => {
       }
     } else {
       try {
-        await editMarketService(Id, request);
+        await editMarketService(Id, request, token);
         setPopupMessage("Edit Market Successfully");
       } catch (error) {
         console.error(error);
@@ -235,7 +245,11 @@ const handleDeleteMarketImageKey = (imageUrl: string) => {
     // window.location.href = "/my-market/" + Id;
   }
 
-  const updateLog = (index: number, field: "size" | "price" | "name", value: string) => {
+  const updateLog = (
+    index: number,
+    field: "size" | "price" | "name",
+    value: string
+  ) => {
     setFormData((prev) => {
       const newLogs = [...prev.logs];
       if (field === "price") {
@@ -263,8 +277,8 @@ const handleDeleteMarketImageKey = (imageUrl: string) => {
           name: "",
           size: "",
           price: 0,
-          user_id: Number(prev.userid) || 0,
-          reservation_id: 0,
+          user_id: prev.userid || "",
+          reservation_id: "",
         },
       ],
     }));
@@ -500,7 +514,7 @@ const handleDeleteMarketImageKey = (imageUrl: string) => {
                 + Add Log
               </Button>
             </div>
-            
+
             {/* Type Section */}
             <div>
               <label className="block mb-1 text-sm font-medium">
@@ -517,8 +531,8 @@ const handleDeleteMarketImageKey = (imageUrl: string) => {
                 <option value="Event">Event</option>
               </select>
             </div>
-            
-            {editMode == "Edit" ? 
+
+            {editMode == "Edit" ? (
               <div className="mt-4">
                 <label className="block mb-1 text-sm font-medium text-gray-700">
                   Market Status
@@ -549,10 +563,9 @@ const handleDeleteMarketImageKey = (imageUrl: string) => {
                   </span>
                 </div>
               </div>
-
-
-              : <></>
-            }
+            ) : (
+              <></>
+            )}
 
             <Button type="submit" className="w-full">
               {editMode} Market

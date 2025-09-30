@@ -27,6 +27,7 @@ import { userInfoService } from "@/services/getUserInfo";
 
 export default function NavigationBar() {
   const { data: session, status } = useSession();
+  console.log("session", session);
   const userInfo = useAppSelector((state) => state.userInfoSlice);
   console.log("User", userInfo);
   if (status === "loading") {

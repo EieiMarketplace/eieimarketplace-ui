@@ -1,9 +1,17 @@
-export async function editMarketService(Id: string, marketData: FormData) {
+export async function editMarketService(
+  Id: string,
+  marketData: FormData,
+  token: string
+) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL_Market}/markets/${Id}`,
+
     {
       method: "PUT",
-      body: marketData
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: marketData,
     }
   );
 

@@ -49,8 +49,8 @@ export interface MarketLog {
   name: string;
   size: string;
   price: number;
-  user_id: number;
-  reservation_id: number;
+  user_id: string;
+  reservation_id: string;
 }
 
 export interface UserInfo {
