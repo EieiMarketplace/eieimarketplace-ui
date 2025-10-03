@@ -10,7 +10,7 @@ export const marketService = {
     marketRequestParams,
   }: {
     marketRequestParams: MarketRequestParams;
-  }): Promise<Market[]> => {
+  }): Promise<MarketResponse> => {
     const response = await axiosInstanceMarket.get<Market[]>(
       `/markets/search`,
       {

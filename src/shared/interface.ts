@@ -18,6 +18,12 @@ export interface MarketRequestParams {
   offset: string;
 }
 
+export interface MarketResponse {
+  market: Market[];
+  total_count: number;
+  limit: number;
+}
+
 export interface Market {
   id?: string;
   marketName: string;
