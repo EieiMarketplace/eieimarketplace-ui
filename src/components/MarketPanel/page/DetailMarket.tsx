@@ -27,6 +27,7 @@ import MarketReservationSubmitCard from "@/components/Market/market-reservation-
 export default function MarketDetailPanel() {
   const { data: session } = useSession();
   const currentUserId = session?.user?.id;
+  const currentUserRole = session?.user?.role;
 
   const params = useParams();
   const id = params?.id as string;
@@ -292,7 +293,7 @@ export default function MarketDetailPanel() {
               </button>
             </div>
           )}
-          {<MarketReservationSubmitCard market={market} />}
+          {currentUserRole == "vendor" && market.isOpen && <MarketReservationSubmitCard market={market} />}
         </CardContent>
       </Card>
     </div>
