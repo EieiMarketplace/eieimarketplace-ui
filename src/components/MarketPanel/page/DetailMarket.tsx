@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/carousel";
 import ImageCard from "@/components/Market/image-card/ui";
 import { useSession } from "next-auth/react";
+import MarketReservationSubmitCard from "@/components/Market/market-reservation-submit-card/ui";
 
 export default function MarketDetailPanel() {
   const { data: session } = useSession();
@@ -77,14 +78,20 @@ export default function MarketDetailPanel() {
 
           <div className="flex items-center gap-2">
             {/* Market Type */}
-            <span className={`text-sm ${ market.marketType == "Market" ? "bg-orange-500" : "bg-blue-700"} text-white px-2 py-1 rounded-full`}>
+            <span
+              className={`text-sm ${
+                market.marketType == "Market" ? "bg-orange-500" : "bg-blue-700"
+              } text-white px-2 py-1 rounded-full`}
+            >
               {market.marketType || "Market"}
             </span>
 
             {/* isOpen Badge */}
             <span
               className={`text-sm px-2 py-1 rounded-full font-bold ${
-                market.isOpen ? "bg-green-300 text-green-800" : "bg-red-300 text-red-800"
+                market.isOpen
+                  ? "bg-green-300 text-green-800"
+                  : "bg-red-300 text-red-800"
               }`}
             >
               {market.isOpen ? "Opened" : "Closed"}
@@ -285,6 +292,7 @@ export default function MarketDetailPanel() {
               </button>
             </div>
           )}
+          {<MarketReservationSubmitCard market={market} />}
         </CardContent>
       </Card>
     </div>
