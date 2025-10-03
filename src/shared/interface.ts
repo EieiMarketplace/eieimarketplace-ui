@@ -67,3 +67,16 @@ export interface UserInfo {
   phone_number: string;
   role: string;
 }
+
+export interface VendorReservation {
+  id: string;
+  vendorId: string;
+  product: string;
+  markets: {
+    market_name: string;
+    isOpen: boolean;
+    marketType: string;
+  };
+  vendorReservationStatus: string;
+  log?: MarketLog | null;
+}
