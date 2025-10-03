@@ -21,8 +21,12 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import ImageCard from "@/components/Market/image-card/ui";
+import { useSession } from "next-auth/react";
 
 export default function MarketDetailPanel() {
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id;
+
   const params = useParams();
   const id = params?.id as string;
   const [market, setMarket] = useState<Market | null>(null);
@@ -48,6 +52,8 @@ export default function MarketDetailPanel() {
       </div>
     );
   }
+
+  const canEdit = currentUserId && market.userid === currentUserId;
 
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex justify-center w-full">
@@ -266,16 +272,19 @@ export default function MarketDetailPanel() {
           </div>
 
           {/* Edit Button */}
-          <div className="flex justify-end ">
-            <button
-              onClick={() => {
-                window.location.href = `/my-market/${id}/edit`;
-              }}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 "
-            >
-              Edit
-            </button>
-          </div>
+          {/* Show Edit button only if user owns this market */}
+          {canEdit && (
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  window.location.href = `/my-market/${id}/edit`;
+                }}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Edit
+              </button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
