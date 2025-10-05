@@ -80,3 +80,18 @@ export interface VendorReservation {
   vendorReservationStatus: string;
   log?: MarketLog | null;
 }
+
+export interface ReservationDetail {
+  vendorName: string;
+  vendorReservationStatus: string;
+  vendorId: string;
+  marketID: string;
+  marketInfo: {
+    market_name: string;
+    isOpen: boolean;
+    marketType: string;
+  };
+  reservationProduct: string;
+  reservationDetail: string;
+  Log: MarketLog[];
+}

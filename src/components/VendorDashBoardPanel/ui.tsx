@@ -1,55 +1,51 @@
-"use client"
+"use client";
 import { getVendorReservation } from "@/services/getVendorReservation";
 import { VendorReservation } from "@/shared/interface";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
+import VendorReservationCard from "./element/card";
 
-export default function VendorDashboardPanel(){
-    const { data: session } = useSession();
-    const userID = session?.user.id;
-    const token = session?.user.token!;
-    
-    const [Reservations, setReservations] = useState<VendorReservation[]>([]);
+export default function VendorDashboardPanel() {
+  const { data: session } = useSession();
+  const userID = session?.user.id;
+  const token = session?.user.token!;
+  const [reservations, setReservations] = useState<VendorReservation[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const fetchReservations = useCallback(async () => {
-        try {
-            const Reservation = await getVendorReservation(userID as string, token);
-            setReservations(Reservation);
-            console.log(Reservation);
-        } catch (err) {
-            console.error("Failed to fetch reservation:", err);
-        }
-    }, []);
+  const fetchReservations = useCallback(async () => {
+    try {
+      setLoading(true);
+      const result = await getVendorReservation(userID as string, token);
+      console.log("Fetched reservations:", result);
+      setReservations(result);
+    } catch (err) {
+      console.error("Failed to fetch reservation:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [userID, token]);
 
-    // load
-    useEffect(() => {
-        fetchReservations();
-    }, [fetchReservations]);
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
 
-    return (
-        <div>
-            <h2>My Reservations</h2>
-            {Reservations.length === 0 ? (
-                <p>No reservations found.</p>
-            ) : (
-                <ul>
-                    {Reservations.map((reservation) => (
-                        <li key={reservation.id}>
-                            <div>Market: {reservation.markets.market_name} {reservation.markets.marketType} {reservation.markets.isOpen}</div>
-                            <div>Date: (TO PUT)</div>
-                            <div>
-                                {reservation.log
-                                    ? `${reservation.log.name} - ${reservation.log.size} - ${reservation.log.price} - ${reservation.log.user_id} - ${reservation.log.reservation_id}`
-                                    : ""
-                                }
-                            </div>
-                            <div>Status: {reservation.vendorReservationStatus}</div>
-                            <div>---</div>
-                         
-                        </li>
-                    ))}
-                </ul>
-            )}
+  return (
+    <div className="p-6 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        My Reservations
+      </h2>
+
+      {loading ? (
+        <p className="text-gray-500 text-center">Loading reservations...</p>
+      ) : reservations.length === 0 ? (
+        <p className="text-gray-500 text-center">No reservations found.</p>
+      ) : (
+        <div className="flex flex-col space-y-4 max-w-2xl mx-auto">
+          {reservations.map((res) => (
+            <VendorReservationCard key={res.id} reservation={res} />
+          ))}
         </div>
-    );
+      )}
+    </div>
+  );
 }
