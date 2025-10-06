@@ -3,11 +3,11 @@ import { getVendorReservation } from "@/services/getVendorReservation";
 import { VendorReservation } from "@/shared/interface";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
-import VendorReservationCard from "./element/card";
+import VendorReservationCard from "../Market/vendor-reservation-card/ui";
 
 export default function VendorDashboardPanel() {
   const { data: session } = useSession();
-  const userID = session?.user.id;
+  const userID = session?.user.id!;
   const token = session?.user.token!;
   const [reservations, setReservations] = useState<VendorReservation[]>([]);
   const [loading, setLoading] = useState(true);

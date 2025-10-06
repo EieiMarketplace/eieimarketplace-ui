@@ -1,23 +1,26 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { getReservationDetail } from "@/services/getReservationDetail";
 import type { ReservationDetail } from "@/shared/interface";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import ReservationDataPart from "../ReservationDataPart/ui";
+import { ReservationStatus } from "@/shared/enum";
 
 interface ReservationDetailProps {
   role: string; // "VENDOR" and "ORANZIER"
 }
 
-export default function ReservationDetail({
+export default function ReservationDetailPanel({
   role,
 }: ReservationDetailProps) {
-    
   const { data: session } = useSession();
   const userID = session?.user.id;
   const token = session?.user.token!;
-  const [reservationDetail, setReservationDetail] = useState<ReservationDetail>();
+  const [reservationDetail, setReservationDetail] =
+    useState<ReservationDetail>();
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
@@ -35,26 +38,25 @@ export default function ReservationDetail({
     } finally {
       setLoading(false);
     }
-  }, [userID, token]);
+  }, []);
 
   useEffect(() => {
     fetchReservations();
   }, [fetchReservations]);
 
   return (
-    <div className="p-6 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
-      
+    <Card className="max-w-3xl flex flex-col w-full shadow-xl rounded-2xl  overflow-hidden p-3">
       <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
         Reservation Detail
       </h2>
 
       {loading ? (
         <p className="text-gray-500 text-center">Loading reservation...</p>
-      ) :(
-        <>Hello World</>
+      ) : (
+        <CardContent className="text-sm space-y-3">
+          <ReservationDataPart reservationData={reservationDetail!} />
+        </CardContent>
       )}
-    </div>
-    
-
+    </Card>
   );
 }

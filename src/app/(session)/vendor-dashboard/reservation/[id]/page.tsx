@@ -1,8 +1,9 @@
-"use client";
+import ReservationDetailPanel from "@/components/Reservation/ReservationDetailPanel/ui";
 
-import ReservationDetail from "@/components/ReservationDetailPanel/ui";
-
-export default function VendorReservationDetail() {
-
-  return <><ReservationDetail role={"VENDOR"} ></ReservationDetail></>;
+export default function VendorReservationDetailPage() {
+  return (
+    <div className="min-h-screen flex items-center content-center justify-center">
+      <ReservationDetailPanel role={"VENDOR"}></ReservationDetailPanel>
+    </div>
+  );
 }
