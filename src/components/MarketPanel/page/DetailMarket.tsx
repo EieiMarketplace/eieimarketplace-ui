@@ -23,6 +23,7 @@ import {
 import ImageCard from "@/components/Market/image-card/ui";
 import { useSession } from "next-auth/react";
 import MarketReservationSubmitCard from "@/components/Market/market-reservation-submit-card/ui";
+import MarketReservationCard from "@/components/Market/market-reservation-card/ui";
 
 export default function MarketDetailPanel() {
   const { data: session } = useSession();
@@ -55,7 +56,7 @@ export default function MarketDetailPanel() {
     );
   }
 
-  const canEdit = currentUserId && market.userid === currentUserId;
+  const isMarketOwner = currentUserId && market.userid === currentUserId;
 
   return (
     <div className="min-h-screen bg-gray-100 p-8 flex justify-center w-full">
@@ -281,7 +282,7 @@ export default function MarketDetailPanel() {
 
           {/* Edit Button */}
           {/* Show Edit button only if user owns this market */}
-          {canEdit && (
+          {isMarketOwner && (
             <div className="flex justify-end">
               <button
                 onClick={() => {
@@ -294,6 +295,7 @@ export default function MarketDetailPanel() {
             </div>
           )}
           {currentUserRole == "vendor" && market.isOpen && <MarketReservationSubmitCard market={market} />}
+          {isMarketOwner && <MarketReservationCard market={market}/>}
         </CardContent>
       </Card>
     </div>
