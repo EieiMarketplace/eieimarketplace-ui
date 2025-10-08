@@ -23,6 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useRouter } from "next/navigation";
 
 interface CreateAndEditMarketPanelProps {
   editMode: string;
@@ -33,6 +34,7 @@ export default function CreateAndEditMarketPanel({
   editMode,
   Id,
 }: CreateAndEditMarketPanelProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState<MarketCreateRequest>({
     id: "",
     marketName: "",
@@ -242,7 +244,7 @@ export default function CreateAndEditMarketPanel({
 
   function OnPopUpClick(): void {
     setPopupMessage(null);
-    // window.location.href = "/my-market/" + Id;
+    router.push(`/my-market`);
   }
 
   const updateLog = (
@@ -285,7 +287,7 @@ export default function CreateAndEditMarketPanel({
   };
 
   return (
-    <div className="relative flex justify-center items-center min-h-screen bg-gray-50 p-6">
+    <div className=" flex justify-center items-center pt-15  bg-gray-50 p-6">
       <Card className="w-full max-w-2xl shadow-lg rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">
