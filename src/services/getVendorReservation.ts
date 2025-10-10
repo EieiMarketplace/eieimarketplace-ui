@@ -1,15 +1,18 @@
 import { VendorReservation } from "@/shared/interface";
 
-export async function getVendorReservation(id: string, token: string): Promise<VendorReservation[]> {
+export async function getVendorReservation(
+  id: string,
+  token: string
+): Promise<VendorReservation[]> {
   if (!id) throw new Error("Vendor ID is required");
-
+  console.log("ID", id, process.env.NEXT_PUBLIC_API_URL_Reservation);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL_Reservation}/reservations/vendor/${id}`, // your GET endpoint
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     }
   );

@@ -29,12 +29,12 @@ export default function MarketReservationSubmitCard({
       const payload = {
         product,
         detail,
-        userId: session.user.id, // from session
-        marketId: market.id,     // from props
+        //userId: session.user.id, // from session
+        marketId: market.id, // from props
       };
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/reservation/reserve`,
+        `${process.env.NEXT_PUBLIC_API_URL_Reservation}/reservations/reserve`,
         payload,
         {
           headers: {

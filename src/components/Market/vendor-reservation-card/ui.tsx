@@ -28,8 +28,10 @@ export default function VendorReservationCard({
 
   return (
     <div
-      onClick={() => router.push(`/vendor-dashboard/reservation/${reservation.id}`)}
-      className="cursor-pointer bg-white border-l-8 p-5 rounded-2xl shadow-md transition-all hover:shadow-xl hover:-translate-y-1 border-blue-400 hover:border-purple-500"
+      onClick={() =>
+        router.push(`/vendor-dashboard/reservation/${reservation.id}`)
+      }
+      className="cursor-pointer bg-white border-l-8 p-5 rounded-2xl shadow-md transition-all hover:shadow-xl hover:-translate-y-1 border-blue-400 hover:border-purple-500  "
     >
       <div className="flex justify-between items-start mb-2">
         <h3 className="text-xl font-semibold text-gray-800">
@@ -51,8 +53,7 @@ export default function VendorReservationCard({
 
       <div className="text-sm text-gray-700 space-y-2">
         <p>
-          <span className="font-medium">Reservation Date:</span>{" "}
-          {"—"}
+          <span className="font-medium">Reservation Date:</span> {"—"}
         </p>
         <p>
           <span className="font-medium">Product Name:</span>{" "}
@@ -63,16 +64,16 @@ export default function VendorReservationCard({
           {reservation.log ? (
             <div className="flex flex-wrap gap-4 mt-2">
               <span className="flex items-center px-3 py-1 rounded-lg shadow-sm">
-            <span className="font-semibold  mr-1">Name:</span>
-            {reservation.log.name ?? "-"}
+                <span className="font-semibold  mr-1">Name:</span>
+                {reservation.log.name ?? "-"}
               </span>
               <span className="flex items-center px-3 py-1 rounded-lg shadow-sm">
-            <span className="font-semibold  mr-1">Size:</span>
-            {reservation.log.size ?? "-"}
+                <span className="font-semibold  mr-1">Size:</span>
+                {reservation.log.size ?? "-"}
               </span>
               <span className="flex items-center px-3 py-1 rounded-lg shadow-sm">
-            <span className="font-semibold mr-1">Price:</span>
-            {reservation.log.price ?? "-"}
+                <span className="font-semibold mr-1">Price:</span>
+                {reservation.log.price ?? "-"}
               </span>
             </div>
           ) : (
