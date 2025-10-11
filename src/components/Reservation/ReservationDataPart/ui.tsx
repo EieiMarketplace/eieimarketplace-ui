@@ -1,18 +1,15 @@
-import { ReservationStatus } from "@/shared/enum";
-import ReservationLog from "../ReservationLog/ui";
-import { MarketLog, ReservationDetail } from "@/shared/interface";
+"use client";
+
+import { ReservationDetail } from "@/shared/interface";
 import { useSession } from "next-auth/react";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Form
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import LogPart from "./log";
+import SlipPart from "./slip";
 
 export default function ReservationDataPart({
   reservationData,
@@ -20,108 +17,108 @@ export default function ReservationDataPart({
   reservationData: ReservationDetail;
 }) {
   const { data: session } = useSession();
-  //   const log: MarketLog[] = [{ name: "hello", price: 500, size: "size" }];
   const role = session?.user.role;
+
   const getStatusStyle = (status: string) => {
     switch (status.toUpperCase()) {
       case "MERCHANT":
-        return "bg-green-100 text-green-700 border-green-500";
+        return "text-green-600 bg-green-50";
       case "WAITFORPAY":
-        return "bg-yellow-100 text-yellow-700 border-yellow-500";
       case "VALIDATESLIP":
-        return "bg-yellow-100 text-yellow-700 border-yellow-500";
+        return "text-yellow-600 bg-yellow-50";
       case "RETIRE":
-        return "bg-red-100 text-red-700 border-red-500";
+        return "text-red-600 bg-red-50";
       default:
-        return "bg-blue-100 text-blue-700 border-blue-300";
+        return "text-blue-600 bg-blue-50";
     }
   };
+
+  // Explicitly type slipImageKeys to avoid implicit any[]
+  const slipImageKeys: { marketPlanImageUrl: string }[] = [];
+
   const formSchemaApplication = z.object({
-    log: z.string("Please Select Log for Vendor"),
+    log: z.string().nonempty("Please select a log for vendor"),
   });
 
-  const form1 = useForm<z.infer<typeof formSchemaApplication>>({
+  const form = useForm<z.infer<typeof formSchemaApplication>>({
     resolver: zodResolver(formSchemaApplication),
-    defaultValues: {
-      log: "",
-    },
+    defaultValues: { log: "" },
   });
 
-  const formProps =
-    reservationData.vendorReservationStatus === ReservationStatus.APPLICATION
-      ? form1
-      : form1;
-
-  const onSubmit = () => {};
+  const onSubmit = (data: any) => {
+    console.log("Selected Log:", data.log);
+  };
 
   return (
-    <div className="w-full  ">
-      <Form {...formProps}>
-        <form
-          onSubmit={form1.handleSubmit(onSubmit)}
-          className="flex flex-col space-y-2"
-        >
-          <div className="flex-row">
-            <span className="font-semibold mr-1">{"Vendor Name: "}</span>
-            <span>{reservationData.vendorName}</span>
-          </div>
-          <div className="flex-row">
-            <span className="font-semibold mr-1">{"Reservation Time: "}</span>
-            <span>In Problem Now</span>
-          </div>
-          <div className="flex-row">
-            <span className="font-semibold mr-1">{"Reservation Detail: "}</span>
-            <span>{reservationData.reservationDetail}</span>
-          </div>
-          <div className="flex-row">
-            <span className="font-semibold mr-1">{"Reservation Status: "}</span>
-            <span
-              className={`text-sm font-semibold px-3 py-1 rounded-full border ${getStatusStyle(
-                reservationData.vendorReservationStatus
-              )}`}
-            >
-              {reservationData.vendorReservationStatus}
-            </span>
-          </div>
-          <div className=" ">
-            {role == "vendor" && reservationData.Log.length > 0 ? (
-              reservationData.Log.map((eachLog, index) => (
-                <ReservationLog key={index} log={eachLog}></ReservationLog>
-              ))
-            ) : role == "organizer" && reservationData.Log.length > 0 ? (
-              // Select Log for vendor
-              <FormField
-                control={formProps.control}
-                name="log"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Log:</FormLabel>
-                    <FormControl>
-                      <select
-                        className="w-[500px] h-10 px-3 py-2 bg-white shadow-xl rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8A96FD]"
-                        {...field}
-                      >
-                        {reservationData.Log.map((eachLog, index) => (
-                          <option value={eachLog.name}>{eachLog.name}</option>
-                        ))}
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : (
-              <div className="flex-row">
-                <span className="font-semibold mr-1">{"Log Detail: "}</span>
-                <span>{"No logs are currently occupying resources."}</span>
-              </div>
-            )}
-          </div>
+    <div className="flex justify-center items-start min-h-screen bg-gray-50 py-10">
+      <div className="w-full max-w-3xl bg-white rounded-xl border border-gray-100 shadow-sm p-10">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col space-y-6 text-base text-gray-800"
+          >
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Reservation Information
+            </h2>
 
-          {/* Visualize Slip or Form to Upload Slip */}
-          <div></div>
-        </form>
-      </Form>
+            {/* Vendor Name */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">Vendor Name</span>
+              <span className="font-medium">{reservationData.vendorName}</span>
+            </div>
+
+            {/* Reservation Time */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">
+                Reservation Time
+              </span>
+              <span className="font-medium text-gray-700">In Progress</span>
+            </div>
+
+            {/* Reservation Detail */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">
+                Reservation Detail
+              </span>
+              <span className="font-medium">
+                {reservationData.reservationDetail}
+              </span>
+            </div>
+
+            {/* Reservation Status */}
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">
+                Reservation Status
+              </span>
+              <span
+                className={`inline-block self-start px-3 py-1 mt-1 rounded-md text-sm font-semibold ${getStatusStyle(
+                  reservationData.vendorReservationStatus
+                )}`}
+              >
+                {reservationData.vendorReservationStatus}
+              </span>
+            </div>
+
+            {/* Logs Section */}
+            <LogPart LogProps={{role: role || "", status: reservationData.vendorReservationStatus, logs: reservationData.Log , form: form}} />
+
+            {/* Reservation Detail */}
+            <SlipPart SlipProps={{role: role || "", status: reservationData.vendorReservationStatus, slipImageKeys: []}}/>
+            
+
+            {/* Submit Button (only for organizer) */}
+            {role === "organizer" && reservationData.Log.length > 0 && (
+              <button
+                type="submit"
+                className="w-fit mt-4 px-5 py-2 rounded-md bg-gray-800 text-white text-sm hover:bg-gray-700 transition"
+              >
+                Submit
+              </button>
+            )}
+
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }

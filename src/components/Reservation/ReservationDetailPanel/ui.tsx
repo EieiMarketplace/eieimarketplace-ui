@@ -9,13 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import ReservationDataPart from "../ReservationDataPart/ui";
 import { ReservationStatus } from "@/shared/enum";
 
-interface ReservationDetailProps {
-  role: string; // "VENDOR" and "ORANZIER"
-}
-
-export default function ReservationDetailPanel({
-  role,
-}: ReservationDetailProps) {
+export default function ReservationDetailPanel() {
   const { data: session } = useSession();
   const userID = session?.user.id;
   const token = session?.user.token!;
@@ -45,18 +39,23 @@ export default function ReservationDetailPanel({
   }, [fetchReservations]);
 
   return (
-    <Card className="max-w-3xl flex flex-col w-full shadow-xl rounded-2xl  overflow-hidden p-3">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+    <>
+      {/* <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
         Reservation Detail
-      </h2>
+      </h2> */}
 
       {loading ? (
         <p className="text-gray-500 text-center">Loading reservation...</p>
       ) : (
-        <CardContent className="text-sm space-y-3">
-          <ReservationDataPart reservationData={reservationDetail!} />
-        </CardContent>
+        // <CardContent className="text-sm space-y-3">
+        <ReservationDataPart reservationData={reservationDetail!} />
+        // </CardContent>
       )}
-    </Card>
+
+      {/* 
+      <Card className="max-w-3xl flex flex-col w-full shadow-xl rounded-2xl  overflow-hidden p-3">
+      </Card>
+      */}
+    </>
   );
 }
