@@ -95,3 +95,7 @@ export interface ReservationDetail {
   reservationDetail: string;
   Log: MarketLog[];
 }
+
+export interface SlipResponse {
+  slip_urls: string[];
+}

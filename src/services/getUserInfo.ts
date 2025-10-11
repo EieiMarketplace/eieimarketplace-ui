@@ -12,6 +12,7 @@ export const userInfoService = {
     try {
       const response = await axiosInstance.post<void>("/users/logout");
     } catch (e) {
+      console.log("Hello Error");
       signOut();
     }
     // return response

@@ -2,9 +2,7 @@
 
 import { ReservationDetail } from "@/shared/interface";
 import { useSession } from "next-auth/react";
-import {
-  Form
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -100,7 +98,14 @@ export default function ReservationDataPart({
             </div>
 
             {/* Logs Section */}
-            <LogPart LogProps={{role: role || "", status: reservationData.vendorReservationStatus, logs: reservationData.Log , form: form}} />
+            <LogPart
+              LogProps={{
+                role: role || "",
+                status: reservationData.vendorReservationStatus,
+                logs: reservationData.Log,
+                form: form,
+              }}
+            />
 
             {/* Reservation Detail */}
             <SlipPart SlipProps={{role: role || "", status: reservationData.vendorReservationStatus, slipImageKeys: []}}/>
@@ -111,12 +116,6 @@ export default function ReservationDataPart({
           </form>
         </Form>
       </div>
-          {/* Visualize Slip or Form to Upload Slip */}
-          <div>
-            <ReservationSlipPart slipNew={newSlip} />
-          </div>
-        </form>
-      </Form>
     </div>
   );
 }
