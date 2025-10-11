@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import LogPart from "./log";
 import SlipPart from "./slip";
+import ButtonPart from "./Button/button";
 
 export default function ReservationDataPart({
   reservationData,
@@ -45,16 +46,11 @@ export default function ReservationDataPart({
     defaultValues: { log: "" },
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Selected Log:", data.log);
-  };
-
   return (
     <div className="flex justify-center items-start min-h-screen bg-gray-50 py-10">
       <div className="w-full max-w-3xl bg-white rounded-xl border border-gray-100 shadow-sm p-10">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col space-y-6 text-base text-gray-800"
           >
             <h2 className="text-2xl font-semibold text-gray-900">
@@ -105,17 +101,9 @@ export default function ReservationDataPart({
             {/* Reservation Detail */}
             <SlipPart SlipProps={{role: role || "", status: reservationData.vendorReservationStatus, slipImageKeys: []}}/>
             
-
-            {/* Submit Button (only for organizer) */}
-            {role === "organizer" && reservationData.Log.length > 0 && (
-              <button
-                type="submit"
-                className="w-fit mt-4 px-5 py-2 rounded-md bg-gray-800 text-white text-sm hover:bg-gray-700 transition"
-              >
-                Submit
-              </button>
-            )}
-
+            {/*Button*/}
+            <ButtonPart Button={{role: role || "", status: reservationData.vendorReservationStatus, form: form}} />
+            
           </form>
         </Form>
       </div>

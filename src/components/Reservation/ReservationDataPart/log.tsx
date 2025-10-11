@@ -19,13 +19,6 @@ export default function LogPart({
     return (
         <div className="pt-4 border-t border-gray-100">
               {role === "organizer" && status === "APPLICATION" && logs.length > 0 ? (
-                <div className="space-y-4">
-                  <span className="text-gray-500 text-sm">Logs</span>
-                  {logs.map((eachLog, index) => (
-                    <ReservationLog key={index} log={eachLog} />
-                  ))}
-                </div>
-              ) : role === "vendor" && logs.length > 0? (
                 <FormField
                   control={form.control}
                   name="log"
@@ -51,6 +44,14 @@ export default function LogPart({
                     </FormItem>
                   )}
                 />
+              ) : logs.length == 1? (
+                <div className="space-y-4">
+                  <span className="text-gray-500 text-sm">Logs</span>
+                  {logs.map((eachLog, index) => (
+                    <ReservationLog key={index} log={eachLog} />
+                  ))}
+                </div>
+
               ) : (
                 <div className="flex flex-col">
                   <span className="text-gray-500 text-sm mb-1">Log Detail</span>
