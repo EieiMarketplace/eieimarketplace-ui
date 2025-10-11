@@ -53,7 +53,7 @@ export default function CreateAndEditMarketPanel({
   });
   const { data: session } = useSession();
   const userID = session?.user.id;
-  const token = session?.user.token!;
+  const token = session?.user?.token || "";
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export default function CreateAndEditMarketPanel({
       })),
       detail: formData.detail,
       rule: formData.rule,
-      userid: userID?.toString()!!,
+      userid: userID?.toString() ?? "",
       newCoverImageFile: formData.newCoverImageFile,
       isOpen: formData.isOpen || false,
       marketType: formData.marketType || "Market",
@@ -394,17 +394,21 @@ export default function CreateAndEditMarketPanel({
                   <div className="w-full">
                     <Carousel className="w-full">
                       <CarouselContent className="h-80">
-                        {formData.marketPlanKeys.map((eachMarketPlan, _) => (
-                          <CarouselItem key={eachMarketPlan.marketPlanImageUrl}>
-                            <ImageCard
-                              url={`${eachMarketPlan.marketPlanImageUrl}`}
-                              alt={`${eachMarketPlan.marketPlanImageUrl}`}
-                              handleDeleteImageAndFile={
-                                handleDeleteMarketImageKey
-                              }
-                            />
-                          </CarouselItem>
-                        ))}
+                        {formData.marketPlanKeys.map(
+                          (eachMarketPlan, index) => (
+                            <CarouselItem
+                              key={eachMarketPlan.marketPlanImageUrl}
+                            >
+                              <ImageCard
+                                url={`${eachMarketPlan.marketPlanImageUrl}`}
+                                alt={`${eachMarketPlan.marketPlanImageUrl}`}
+                                handleDeleteImageAndFile={
+                                  handleDeleteMarketImageKey
+                                }
+                              />
+                            </CarouselItem>
+                          )
+                        )}
                       </CarouselContent>
                       <CarouselPrevious />
                       <CarouselNext />

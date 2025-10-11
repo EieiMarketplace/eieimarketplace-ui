@@ -12,7 +12,7 @@ import { ReservationStatus } from "@/shared/enum";
 export default function ReservationDetailPanel() {
   const { data: session } = useSession();
   const userID = session?.user.id;
-  const token = session?.user.token!;
+  const token = session?.user?.token || "";
   const [reservationDetail, setReservationDetail] =
     useState<ReservationDetail>();
   const [loading, setLoading] = useState(true);

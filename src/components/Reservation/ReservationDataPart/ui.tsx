@@ -3,7 +3,7 @@
 import { ReservationDetail } from "@/shared/interface";
 import { useSession } from "next-auth/react";
 import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import LogPart from "./log";
@@ -12,6 +12,14 @@ import ReservationSlipPart from "../ReservationSlipPart/ui";
 import { useState } from "react";
 import ButtonPart from "./Button/button";
 
+const formSchemaApplication = z.object({
+  log: z.string().nonempty("Please select a log for vendor"),
+});
+
+type FormSchema = z.infer<typeof formSchemaApplication>;
+
+export type FormDataLog = UseFormReturn<FormSchema>;
+
 export default function ReservationDataPart({
   reservationData,
 }: {
@@ -19,8 +27,12 @@ export default function ReservationDataPart({
 }) {
   const { data: session } = useSession();
   const [newSlip, setNewSlip] = useState<File | null | undefined>();
-  //   const log: MarketLog[] = [{ name: "hello", price: 500, size: "size" }];
   const role = session?.user.role;
+
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchemaApplication),
+    defaultValues: { log: "" },
+  });
 
   const getStatusStyle = (status: string) => {
     switch (status.toUpperCase()) {
@@ -103,7 +115,7 @@ export default function ReservationDataPart({
                 role: role || "",
                 status: reservationData.vendorReservationStatus,
                 logs: reservationData.Log,
-                form: form,
+                form,
               }}
             />
 

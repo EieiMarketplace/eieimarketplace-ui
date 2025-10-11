@@ -40,7 +40,7 @@ export default function MarketDetailPanel() {
       try {
         const data = await getMarketFromId(id);
         setMarket(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Failed to fetch");
         //console.error("Failed to fetch market detail:", err);
       }
@@ -294,8 +294,10 @@ export default function MarketDetailPanel() {
               </button>
             </div>
           )}
-          {currentUserRole == "vendor" && market.isOpen && <MarketReservationSubmitCard market={market} />}
-          {isMarketOwner && <MarketReservationCard market={market}/>}
+          {currentUserRole == "vendor" && market.isOpen && (
+            <MarketReservationSubmitCard market={market} />
+          )}
+          {isMarketOwner && <MarketReservationCard market={market} />}
         </CardContent>
       </Card>
     </div>

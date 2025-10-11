@@ -10,14 +10,12 @@ interface ReservationDetailProps {
   role: string; // "VENDOR" and "ORANZIER"
 }
 
-export default function ReservationDetail({
-  role,
-}: ReservationDetailProps) {
-    
+export default function ReservationDetail({ role }: ReservationDetailProps) {
   const { data: session } = useSession();
   const userID = session?.user.id;
-  const token = session?.user.token!;
-  const [reservationDetail, setReservationDetail] = useState<ReservationDetail>();
+  const token = session?.user?.token || "";
+  const [reservationDetail, setReservationDetail] =
+    useState<ReservationDetail>();
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
@@ -43,18 +41,15 @@ export default function ReservationDetail({
 
   return (
     <div className="p-6 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
-      
       <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
         Reservation Detail
       </h2>
 
       {loading ? (
         <p className="text-gray-500 text-center">Loading reservation...</p>
-      ) :(
+      ) : (
         <>Hello World</>
       )}
     </div>
-    
-
   );
 }

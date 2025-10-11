@@ -49,9 +49,9 @@ export default function MarketReservationCard({ market }: { market: Market }) {
         });
 
         setReservations(res.data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Failed to fetch reservations:", err);
-        setError(err.response?.data?.detail || "Failed to load reservations");
+        setError("Failed to load reservations");
       } finally {
         setLoading(false);
       }
