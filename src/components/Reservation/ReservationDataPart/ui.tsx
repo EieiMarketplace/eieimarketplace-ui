@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import LogPart from "./log";
 import SlipPart from "./slip";
+import ReservationSlipPart from "../ReservationSlipPart/ui";
+import { useState } from "react";
 import ButtonPart from "./Button/button";
 
 export default function ReservationDataPart({
@@ -18,6 +20,8 @@ export default function ReservationDataPart({
   reservationData: ReservationDetail;
 }) {
   const { data: session } = useSession();
+  const [newSlip, setNewSlip] = useState<File | null | undefined>();
+  //   const log: MarketLog[] = [{ name: "hello", price: 500, size: "size" }];
   const role = session?.user.role;
 
   const getStatusStyle = (status: string) => {
@@ -107,6 +111,12 @@ export default function ReservationDataPart({
           </form>
         </Form>
       </div>
+          {/* Visualize Slip or Form to Upload Slip */}
+          <div>
+            <ReservationSlipPart slipNew={newSlip} />
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }
