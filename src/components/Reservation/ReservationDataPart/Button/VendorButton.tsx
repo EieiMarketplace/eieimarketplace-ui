@@ -6,20 +6,15 @@ import { useState } from "react"; // Import useState
 import { slipService } from "@/services/slips";
 
 export default function VendorButtonPart({ Button }: { Button: ButtonProps }) {
-const LoadingOverlay = () => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-300 bg-opacity-100 backdrop-blur-sm">
-    <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow-2xl">
-      <div className="w-8 h-8 border-4 border-t-4 border-gray-200 rounded-full border-t-gray-800 animate-spin"></div>
-      <p className="mt-4 text-lg font-semibold text-gray-800">Loading...</p>
+  const LoadingOverlay = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-300 bg-opacity-100 backdrop-blur-sm">
+      <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow-2xl">
+        <div className="w-8 h-8 border-4 border-t-4 border-gray-200 rounded-full border-t-gray-800 animate-spin"></div>
+        <p className="mt-4 text-lg font-semibold text-gray-800">Loading...</p>
+      </div>
     </div>
-  </div>
-);
+  );
 
-export default function VendorButtonPart({
-  Button,
-}: {
-  Button: ButtonProps;
-}) {
   const params = useParams();
   const reservationId = params?.id as string;
   const router = useRouter(); // Initialize the router
