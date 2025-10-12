@@ -102,7 +102,7 @@ export default function ReservationDataPart({
             <SlipPart SlipProps={{role: role || "", status: reservationData.vendorReservationStatus, slipImageKeys: []}}/>
             
             {/*Button*/}
-            <ButtonPart Button={{role: role || "", status: reservationData.vendorReservationStatus, form: form}} />
+            <ButtonPart Button={{role: role || "", status: reservationData.vendorReservationStatus, form: form, reservationData: reservationData}} />
             
           </form>
         </Form>
