@@ -30,7 +30,7 @@ export default function MyMarketHeader({
   const router = useRouter();
   return (
     <div className="p-6 space-y-2 w-full">
-      <div className="flex flex-row space-x-5">
+      <div className="flex flex-row space-x-5 pt-10">
         <h1 className="text-2xl font-bold content-center">My Market Lists</h1>
         <Button
           className="content-center text-sm shadow-xl rounded-md bg-[#5B63AC] p-6 w-[10%] font-semibold text-[#FFFFFF] hover:bg-[#FFFFFF] hover:text-[#5B63AC] hover:border hover:border-[#5B63AC] hover:cursor-pointer"

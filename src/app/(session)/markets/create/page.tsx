@@ -2,12 +2,7 @@ import CreateAndEditMarketPanel from "@/components/MarketPanel/page/CreateAndEdi
 import React from "react";
 
 const CreateMarketPage = () => {
-  return (
-    <CreateAndEditMarketPanel 
-      editMode={"Create"}
-      Id = {""}
-    />
-  );
+  return <CreateAndEditMarketPanel editMode={"Create"} Id={""} />;
 };
 
 export default CreateMarketPage;

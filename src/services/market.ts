@@ -1,5 +1,9 @@
 import axiosInstanceMarket from "@/lib/axios-market";
-import { Market, MarketRequestParams } from "@/shared/interface";
+import {
+  Market,
+  MarketRequestParams,
+  MarketResponse,
+} from "@/shared/interface";
 
 export const marketService = {
   getMarkets: async (): Promise<Market[]> => {
@@ -11,7 +15,7 @@ export const marketService = {
   }: {
     marketRequestParams: MarketRequestParams;
   }): Promise<MarketResponse> => {
-    const response = await axiosInstanceMarket.get<Market[]>(
+    const response = await axiosInstanceMarket.get<MarketResponse>(
       `/markets/search`,
       {
         params: marketRequestParams,

@@ -46,9 +46,9 @@ export default function MarketReservationSubmitCard({
       setMessage("Reservation submitted successfully!");
       setProduct("");
       setDetail("");
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      setMessage(error.response?.data?.detail || "Reservation failed");
+      setMessage("Reservation failed");
     } finally {
       setLoading(false);
     }

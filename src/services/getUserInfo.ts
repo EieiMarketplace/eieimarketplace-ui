@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { UserInfo } from "@/shared/interface";
+import { signOut } from "next-auth/react";
 
 export const userInfoService = {
   getUserInfo: async (): Promise<UserInfo> => {
@@ -8,8 +9,12 @@ export const userInfoService = {
     return response.data;
   },
   logout: async (): Promise<void> => {
-    const response = await axiosInstance.post<void>("/users/logout");
-
+    try {
+      const response = await axiosInstance.post<void>("/users/logout");
+    } catch (e) {
+      console.log("Hello Error");
+      signOut();
+    }
     // return response
   },
 };

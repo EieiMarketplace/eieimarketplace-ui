@@ -92,22 +92,24 @@ export default function RegisterPanel() {
         // Registration successful
         router.push("/auth/login");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Registration error:", error);
-
-      // Handle specific error messages
-      if (error.message?.includes("Email already registered")) {
-        form.setError("email", {
-          message: "This email is already registered. Try logging in instead.",
-        });
-      } else if (error.message?.includes("Username already used")) {
-        form.setError("first_name", {
-          message: "This username is already taken. Please choose another.",
-        });
-      } else if (error.message?.includes("Phone number")) {
-        form.setError("phone_number", {
-          message: "Please enter a valid phone number.",
-        });
+      if (error instanceof Error) {
+        // Handle specific error messages
+        if (error.message?.includes("Email already registered")) {
+          form.setError("email", {
+            message:
+              "This email is already registered. Try logging in instead.",
+          });
+        } else if (error.message?.includes("Username already used")) {
+          form.setError("first_name", {
+            message: "This username is already taken. Please choose another.",
+          });
+        } else if (error.message?.includes("Phone number")) {
+          form.setError("phone_number", {
+            message: "Please enter a valid phone number.",
+          });
+        }
       } else {
         // Generic error
         form.setError("root", {

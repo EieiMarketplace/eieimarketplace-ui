@@ -22,6 +22,7 @@ export default function ImageCard({
         src={url}
         alt={alt}
         fill
+        sizes=""
       ></Image>
 
       {handleDeleteImageAndFile && (

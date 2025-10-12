@@ -57,6 +57,7 @@ export interface MarketLog {
   price: number;
   user_id: string;
   reservation_id: string;
+  error?: string;
 }
 
 export interface UserInfo {
@@ -94,4 +95,8 @@ export interface ReservationDetail {
   reservationProduct: string;
   reservationDetail: string;
   Log: MarketLog[];
+}
+
+export interface SlipResponse {
+  slip_urls: string[];
 }

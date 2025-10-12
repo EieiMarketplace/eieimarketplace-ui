@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Market, MarketRequestParams } from "@/shared/interface";
+import { Market, MarketRequestParams, MarketResponse } from "@/shared/interface";
 import { MarketCard } from "../market-card/ui";
 import { marketService } from "@/services/market";
 import MyMarketHeader from "../mymarket-header/ui";
@@ -37,7 +37,7 @@ export default function MyMarketPanel() {
   const fetchMarkets = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await marketService.getMyMarkets({
+      const res: MarketResponse = await marketService.getMyMarkets({
         marketRequestParams: {
           ...searchValue,
           offset: ((page - 1) * 10).toString(),

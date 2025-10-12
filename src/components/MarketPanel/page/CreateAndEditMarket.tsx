@@ -23,6 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useRouter } from "next/navigation";
 
 interface CreateAndEditMarketPanelProps {
   editMode: string;
@@ -33,6 +34,7 @@ export default function CreateAndEditMarketPanel({
   editMode,
   Id,
 }: CreateAndEditMarketPanelProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState<MarketCreateRequest>({
     id: "",
     marketName: "",
@@ -51,8 +53,9 @@ export default function CreateAndEditMarketPanel({
   });
   const { data: session } = useSession();
   const userID = session?.user.id;
-  const token = session?.user.token!;
+  const token = session?.user?.token || "";
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [disableSubmit, setDisableSubmit] = useState<boolean>(false);
 
   useEffect(() => {
     if (editMode === "Edit" && Id !== "") {
@@ -212,7 +215,7 @@ export default function CreateAndEditMarketPanel({
       })),
       detail: formData.detail,
       rule: formData.rule,
-      userid: userID?.toString()!!,
+      userid: userID?.toString() ?? "",
       newCoverImageFile: formData.newCoverImageFile,
       isOpen: formData.isOpen || false,
       marketType: formData.marketType || "Market",
@@ -242,30 +245,33 @@ export default function CreateAndEditMarketPanel({
 
   function OnPopUpClick(): void {
     setPopupMessage(null);
-    // window.location.href = "/my-market/" + Id;
+    router.push(`/my-market`);
   }
 
-  const updateLog = (
-    index: number,
-    field: "size" | "price" | "name",
-    value: string
-  ) => {
-    setFormData((prev) => {
-      const newLogs = [...prev.logs];
-      if (field === "price") {
-        newLogs[index][field] = parseFloat(value) || 0;
-      } else {
-        newLogs[index][field] = value;
-      }
-      return { ...prev, logs: newLogs };
-    });
-  };
-
   const removeLog = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      logs: prev.logs.filter((_, i) => i !== index),
-    }));
+    const updatedLogs = formData.logs.filter((_, i) => i !== index);
+    console.log(updatedLogs);
+    const nameCounts: Record<string, number> = {};
+    updatedLogs.forEach((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key) nameCounts[key] = (nameCounts[key] || 0) + 1;
+    });
+
+    const logsWithError = updatedLogs.map((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key && nameCounts[key] > 1) {
+        setDisableSubmit(true);
+        return { ...log, error: "Name must be unique" };
+      } else {
+        setDisableSubmit(false);
+        console.log("hello");
+        console.log("log", log);
+        const { error, ...rest } = log;
+        return rest;
+      }
+    });
+
+    setFormData((prev) => ({ ...prev, logs: logsWithError }));
   };
 
   const addLog = () => {
@@ -284,8 +290,35 @@ export default function CreateAndEditMarketPanel({
     }));
   };
 
+  const updateLog = (index: number, field: string, value: string) => {
+    const updatedLogs = formData.logs.map((log, i) =>
+      i === index ? { ...log, [field]: value } : log
+    );
+
+    // ตรวจสอบความซ้ำของ name
+    const nameCounts: Record<string, number> = {};
+    updatedLogs.forEach((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key) nameCounts[key] = (nameCounts[key] || 0) + 1;
+    });
+
+    const logsWithError = updatedLogs.map((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key && nameCounts[key] > 1) {
+        setDisableSubmit(true);
+        return { ...log, error: "Name must be unique" };
+      } else {
+        setDisableSubmit(false);
+        const { error, ...rest } = log;
+        return rest;
+      }
+    });
+
+    setFormData((prev) => ({ ...prev, logs: logsWithError }));
+  };
+
   return (
-    <div className="relative flex justify-center items-center min-h-screen bg-gray-50 p-6">
+    <div className=" flex justify-center items-center pt-15  bg-gray-50 p-6">
       <Card className="w-full max-w-2xl shadow-lg rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">
@@ -392,17 +425,21 @@ export default function CreateAndEditMarketPanel({
                   <div className="w-full">
                     <Carousel className="w-full">
                       <CarouselContent className="h-80">
-                        {formData.marketPlanKeys.map((eachMarketPlan, _) => (
-                          <CarouselItem key={eachMarketPlan.marketPlanImageUrl}>
-                            <ImageCard
-                              url={`${eachMarketPlan.marketPlanImageUrl}`}
-                              alt={`${eachMarketPlan.marketPlanImageUrl}`}
-                              handleDeleteImageAndFile={
-                                handleDeleteMarketImageKey
-                              }
-                            />
-                          </CarouselItem>
-                        ))}
+                        {formData.marketPlanKeys.map(
+                          (eachMarketPlan, index) => (
+                            <CarouselItem
+                              key={eachMarketPlan.marketPlanImageUrl}
+                            >
+                              <ImageCard
+                                url={`${eachMarketPlan.marketPlanImageUrl}`}
+                                alt={`${eachMarketPlan.marketPlanImageUrl}`}
+                                handleDeleteImageAndFile={
+                                  handleDeleteMarketImageKey
+                                }
+                              />
+                            </CarouselItem>
+                          )
+                        )}
                       </CarouselContent>
                       <CarouselPrevious />
                       <CarouselNext />
@@ -464,6 +501,9 @@ export default function CreateAndEditMarketPanel({
                       onChange={(e) => updateLog(index, "name", e.target.value)}
                       required
                     />
+                    {log.error && (
+                      <p className="text-red-500 text-xs mt-1">{log.error}</p>
+                    )}
                   </div>
 
                   <div className="col-span-3">
@@ -567,7 +607,7 @@ export default function CreateAndEditMarketPanel({
               <></>
             )}
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={disableSubmit}>
               {editMode} Market
             </Button>
           </form>
@@ -577,7 +617,7 @@ export default function CreateAndEditMarketPanel({
       {/* Popup Message */}
       {popupMessage && (
         <div
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0 flex items-center justify-center h-full"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
         >
           <div className="bg-white p-6 rounded-lg shadow-lg text-center space-y-4 w-80">

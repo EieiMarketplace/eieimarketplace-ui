@@ -1,4 +1,4 @@
-import VendorDashboardPanel from "@/components/VendorDashboardPanel/ui";
+import VendorDashboardPanel from "@/components/VendorDashBoardPanel/ui";
 
 export default function VendorDashboard() {
   return (

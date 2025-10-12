@@ -2,15 +2,23 @@
 
 import { ReservationDetail } from "@/shared/interface";
 import { useSession } from "next-auth/react";
-import {
-  Form
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import LogPart from "./log";
 import SlipPart from "./slip";
+import ReservationSlipPart from "../ReservationSlipPart/ui";
+import { useState } from "react";
 import ButtonPart from "./Button/button";
+
+const formSchemaApplication = z.object({
+  log: z.string().nonempty("Please select a log for vendor"),
+});
+
+type FormSchema = z.infer<typeof formSchemaApplication>;
+
+export type FormDataLog = UseFormReturn<FormSchema>;
 
 export default function ReservationDataPart({
   reservationData,
@@ -18,6 +26,7 @@ export default function ReservationDataPart({
   reservationData: ReservationDetail;
 }) {
   const { data: session } = useSession();
+  const [newSlip, setNewSlip] = useState<File | null | undefined>();
   const role = session?.user.role;
 
   const getStatusStyle = (status: string) => {
@@ -50,9 +59,7 @@ export default function ReservationDataPart({
     <div className="flex justify-center items-start min-h-screen bg-gray-50 py-10">
       <div className="w-full max-w-3xl bg-white rounded-xl border border-gray-100 shadow-sm p-10">
         <Form {...form}>
-          <form
-            className="flex flex-col space-y-6 text-base text-gray-800"
-          >
+          <form className="flex flex-col space-y-6 text-base text-gray-800">
             <h2 className="text-2xl font-semibold text-gray-900">
               Reservation Information
             </h2>
@@ -96,14 +103,34 @@ export default function ReservationDataPart({
             </div>
 
             {/* Logs Section */}
-            <LogPart LogProps={{role: role || "", status: reservationData.vendorReservationStatus, logs: reservationData.Log , form: form}} />
+            <LogPart
+              LogProps={{
+                role: role || "",
+                status: reservationData.vendorReservationStatus,
+                logs: reservationData.Log,
+                form,
+              }}
+            />
 
             {/* Reservation Detail */}
-            <SlipPart SlipProps={{role: role || "", status: reservationData.vendorReservationStatus, slipImageKeys: []}}/>
-            
+            <SlipPart
+              SlipProps={{
+                role: role || "",
+                status: reservationData.vendorReservationStatus,
+                newSlip,
+                setNewSlip,
+              }}
+            />
+
             {/*Button*/}
-            <ButtonPart Button={{role: role || "", status: reservationData.vendorReservationStatus, form: form, reservationData: reservationData}} />
-            
+            <ButtonPart
+              Button={{
+                role: role || "",
+                status: reservationData.vendorReservationStatus,
+                form: form,
+                reservationData: reservationData,
+              }}
+            />
           </form>
         </Form>
       </div>

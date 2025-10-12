@@ -1,12 +1,19 @@
 import { MarketLog } from "@/shared/interface";
 import ReservationLog from "../ReservationLog/ui";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { FormDataLog } from "./ui";
 
 interface LogProps {
-    role: string;
-    status: string;
-    logs: MarketLog[];
-    form: any;
+  role: string;
+  status: string;
+  logs: MarketLog[];
+  form: FormDataLog;
 }
 
 export default function LogPart({
