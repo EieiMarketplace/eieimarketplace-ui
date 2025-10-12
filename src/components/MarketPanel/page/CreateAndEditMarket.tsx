@@ -55,6 +55,7 @@ export default function CreateAndEditMarketPanel({
   const userID = session?.user.id;
   const token = session?.user?.token || "";
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [disableSubmit, setDisableSubmit] = useState<boolean>(false);
 
   useEffect(() => {
     if (editMode === "Edit" && Id !== "") {
@@ -247,27 +248,30 @@ export default function CreateAndEditMarketPanel({
     router.push(`/my-market`);
   }
 
-  const updateLog = (
-    index: number,
-    field: "size" | "price" | "name",
-    value: string
-  ) => {
-    setFormData((prev) => {
-      const newLogs = [...prev.logs];
-      if (field === "price") {
-        newLogs[index][field] = parseFloat(value) || 0;
-      } else {
-        newLogs[index][field] = value;
-      }
-      return { ...prev, logs: newLogs };
-    });
-  };
-
   const removeLog = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      logs: prev.logs.filter((_, i) => i !== index),
-    }));
+    const updatedLogs = formData.logs.filter((_, i) => i !== index);
+    console.log(updatedLogs);
+    const nameCounts: Record<string, number> = {};
+    updatedLogs.forEach((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key) nameCounts[key] = (nameCounts[key] || 0) + 1;
+    });
+
+    const logsWithError = updatedLogs.map((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key && nameCounts[key] > 1) {
+        setDisableSubmit(true);
+        return { ...log, error: "Name must be unique" };
+      } else {
+        setDisableSubmit(false);
+        console.log("hello");
+        console.log("log", log);
+        const { error, ...rest } = log;
+        return rest;
+      }
+    });
+
+    setFormData((prev) => ({ ...prev, logs: logsWithError }));
   };
 
   const addLog = () => {
@@ -284,6 +288,33 @@ export default function CreateAndEditMarketPanel({
         },
       ],
     }));
+  };
+
+  const updateLog = (index: number, field: string, value: string) => {
+    const updatedLogs = formData.logs.map((log, i) =>
+      i === index ? { ...log, [field]: value } : log
+    );
+
+    // ตรวจสอบความซ้ำของ name
+    const nameCounts: Record<string, number> = {};
+    updatedLogs.forEach((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key) nameCounts[key] = (nameCounts[key] || 0) + 1;
+    });
+
+    const logsWithError = updatedLogs.map((log) => {
+      const key = log.name.trim().toLowerCase();
+      if (key && nameCounts[key] > 1) {
+        setDisableSubmit(true);
+        return { ...log, error: "Name must be unique" };
+      } else {
+        setDisableSubmit(false);
+        const { error, ...rest } = log;
+        return rest;
+      }
+    });
+
+    setFormData((prev) => ({ ...prev, logs: logsWithError }));
   };
 
   return (
@@ -470,6 +501,9 @@ export default function CreateAndEditMarketPanel({
                       onChange={(e) => updateLog(index, "name", e.target.value)}
                       required
                     />
+                    {log.error && (
+                      <p className="text-red-500 text-xs mt-1">{log.error}</p>
+                    )}
                   </div>
 
                   <div className="col-span-3">
@@ -573,7 +607,7 @@ export default function CreateAndEditMarketPanel({
               <></>
             )}
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={disableSubmit}>
               {editMode} Market
             </Button>
           </form>
@@ -583,7 +617,7 @@ export default function CreateAndEditMarketPanel({
       {/* Popup Message */}
       {popupMessage && (
         <div
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0 flex items-center justify-center h-full"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
         >
           <div className="bg-white p-6 rounded-lg shadow-lg text-center space-y-4 w-80">
