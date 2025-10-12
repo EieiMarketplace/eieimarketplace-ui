@@ -5,6 +5,7 @@ import axios from "axios";
 import { Market } from "@/shared/interface";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface Reservation {
   id: string;
@@ -94,10 +95,17 @@ export default function MarketReservationCard({ market }: { market: Market }) {
       {!loading && reservations.length > 0 && (
         <div className="max-h-80 overflow-y-auto space-y-3 pr-2">
           {reservations.map((rsv, index) => (
-            <Card
+            <Link
               key={rsv.id}
-              className="border border-gray-200 shadow-sm hover:shadow-md transition"
-            >
+              href={`/my-market/${rsv.id}/reservation`}
+              passHref
+              className="block 
+                border border-gray-200 
+                shadow-sm 
+                rounded-xl 
+                transition-all duration-300 ease-in-out 
+                hover:shadow-lg hover:-translate-y-1 hover:scale-[1.01]"
+               >
               <CardContent className="p-4 space-y-2">
                 <div className="flex justify-between">
                   <h3 className="font-semibold text-gray-800">
@@ -137,7 +145,7 @@ export default function MarketReservationCard({ market }: { market: Market }) {
                   {new Date(rsv.createdTime).toLocaleString()}
                 </p>
               </CardContent>
-            </Card>
+            </Link>
           ))}
         </div>
       )}
