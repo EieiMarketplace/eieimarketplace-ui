@@ -4,6 +4,15 @@ import { useParams, useRouter } from "next/navigation"; // Import useRouter
 import { useSession } from "next-auth/react";
 import { useState } from "react"; // Import useState
 
+const LoadingOverlay = () => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-300 bg-opacity-100 backdrop-blur-sm">
+    <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow-2xl">
+      <div className="w-8 h-8 border-4 border-t-4 border-gray-200 rounded-full border-t-gray-800 animate-spin"></div>
+      <p className="mt-4 text-lg font-semibold text-gray-800">Loading...</p>
+    </div>
+  </div>
+);
+
 export default function VendorButtonPart({
   Button,
 }: {
@@ -42,33 +51,10 @@ export default function VendorButtonPart({
         }
     };
 
-  const onRetire = async () => {
-    setIsLoading(true); // Start loading
-    try {
-      const res = await patchReservation(
-        reservationData.marketID,
-        "WAITFORPAY",
-        "RETIRE",
-        reservationData.vendorId,
-        reservationId,
-        token
-      );
-      console.log("Patch successful:", res);
-      router.refresh();
-    } catch (error) {
-      console.error("Failed to patch reservation:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onRequest = () => {
-    // This function can also have its own async logic and loading state
-    console.log("To Request");
-  };
-
   return (
     <>
+      {isLoading && <LoadingOverlay />}
+
       {status === "WAITFORPAY" && (
         <div className="flex justify-between mt-4 w-full">
           <button
