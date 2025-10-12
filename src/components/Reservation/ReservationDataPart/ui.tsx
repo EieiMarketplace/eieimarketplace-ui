@@ -29,11 +29,6 @@ export default function ReservationDataPart({
   const [newSlip, setNewSlip] = useState<File | null | undefined>();
   const role = session?.user.role;
 
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchemaApplication),
-    defaultValues: { log: "" },
-  });
-
   const getStatusStyle = (status: string) => {
     switch (status.toUpperCase()) {
       case "MERCHANT":
@@ -64,9 +59,7 @@ export default function ReservationDataPart({
     <div className="flex justify-center items-start min-h-screen bg-gray-50 py-10">
       <div className="w-full max-w-3xl bg-white rounded-xl border border-gray-100 shadow-sm p-10">
         <Form {...form}>
-          <form
-            className="flex flex-col space-y-6 text-base text-gray-800"
-          >
+          <form className="flex flex-col space-y-6 text-base text-gray-800">
             <h2 className="text-2xl font-semibold text-gray-900">
               Reservation Information
             </h2>
@@ -120,11 +113,24 @@ export default function ReservationDataPart({
             />
 
             {/* Reservation Detail */}
-            <SlipPart SlipProps={{role: role || "", status: reservationData.vendorReservationStatus, slipImageKeys: []}}/>
-            
+            <SlipPart
+              SlipProps={{
+                role: role || "",
+                status: reservationData.vendorReservationStatus,
+                newSlip,
+                setNewSlip,
+              }}
+            />
+
             {/*Button*/}
-            <ButtonPart Button={{role: role || "", status: reservationData.vendorReservationStatus, form: form, reservationData: reservationData}} />
-            
+            <ButtonPart
+              Button={{
+                role: role || "",
+                status: reservationData.vendorReservationStatus,
+                form: form,
+                reservationData: reservationData,
+              }}
+            />
           </form>
         </Form>
       </div>
