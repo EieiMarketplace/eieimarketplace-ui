@@ -100,3 +100,11 @@ export interface ReservationDetail {
 export interface SlipResponse {
   slip_urls: string[];
 }
+
+export interface SlipcreateResponse {
+  message: string;
+  id: string;
+  slipKey: string;
+  marketID: string;
+  vendorReservationID: string;
+}

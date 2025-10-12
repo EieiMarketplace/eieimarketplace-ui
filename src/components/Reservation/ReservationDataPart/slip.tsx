@@ -29,7 +29,7 @@ export default function SlipPart({ SlipProps }: { SlipProps: SlipProps }) {
 
     const file = e.target.files[0];
     const newUrl = URL.createObjectURL(file);
-
+    setNewSlip(file);
     setVisualizeSlip([...totalSlipImages, newUrl]);
   };
 

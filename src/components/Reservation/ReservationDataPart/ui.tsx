@@ -129,6 +129,7 @@ export default function ReservationDataPart({
                 status: reservationData.vendorReservationStatus,
                 form: form,
                 reservationData: reservationData,
+                newSlip: newSlip,
               }}
             />
           </form>

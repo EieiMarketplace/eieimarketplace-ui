@@ -3,7 +3,9 @@ import { ButtonProps } from "./button";
 import { useParams, useRouter } from "next/navigation"; // Import useRouter
 import { useSession } from "next-auth/react";
 import { useState } from "react"; // Import useState
+import { slipService } from "@/services/slips";
 
+export default function VendorButtonPart({ Button }: { Button: ButtonProps }) {
 const LoadingOverlay = () => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-300 bg-opacity-100 backdrop-blur-sm">
     <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow-2xl">
@@ -28,28 +30,48 @@ export default function VendorButtonPart({
   const { data: session } = useSession();
   const token = session?.user.token!;
 
-  const { role, status, form, reservationData } = Button;
+  const { role, status, form, reservationData, newSlip } = Button;
 
   const Request = async (Curr: string, Prev: string, logName?: string) => {
-      try{
-          setIsLoading(true);
-          const res = await patchReservation(
-              reservationData.marketID,
-              Curr,
-              Prev,
-              reservationData.vendorId,
-              reservationId,
-              token,
-              logName
-          );
-          console.log("Patch successful:", res);
-          window.location.reload();
-        } catch (error) {
-          console.error("Failed to patch reservation:", error);
-        }  finally {
-          setIsLoading(false); 
-        }
-    };
+    try {
+      setIsLoading(true);
+      const res = await patchReservation(
+        reservationData.marketID,
+        Curr,
+        Prev,
+        reservationData.vendorId,
+        reservationId,
+        token,
+        logName
+      );
+      console.log("Patch successful:", res);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to patch reservation:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const sendCreateSlip = async () => {
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      console.log("slip", newSlip);
+      if (newSlip) {
+        formData.append("slipFile", newSlip);
+      }
+      formData.append("reservationId", reservationId);
+      formData.append("marketId", reservationData.marketID);
+      console.log("form", formData);
+      const response = await slipService.createSlip(formData, token);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to patch reservation:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -61,15 +83,15 @@ export default function VendorButtonPart({
             type="button"
             className="px-5 py-2 rounded-md bg-red-600 text-white text-sm hover:bg-red-500 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
             onClick={() => Request("WAITFORPAY", "RETIRE")}
-            disabled={isLoading} 
+            disabled={isLoading}
           >
             Retire
           </button>
           <button
             type="button"
             className="px-5 py-2 rounded-md bg-gray-800 text-white text-sm hover:bg-gray-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-            onClick={() => Request("WAITFORPAY", "VALIDATESLIP")}
-            disabled={isLoading} 
+            onClick={() => sendCreateSlip()}
+            disabled={isLoading}
           >
             Request
           </button>
