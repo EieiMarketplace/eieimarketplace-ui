@@ -1,11 +1,12 @@
 import { ReservationDetail } from "@/shared/interface";
 import OrganizerButtonPart from "./OrganizerButton";
 import VendorButtonPart from "./VendorButton";
+import { FormDataLog } from "../ui";
 
 export interface ButtonProps {
   role: string;
   status: string;
-  form: any;
+  form: FormDataLog;
   reservationData: ReservationDetail;
   newSlip?: File | undefined | null;
 }

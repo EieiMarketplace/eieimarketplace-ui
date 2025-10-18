@@ -3,6 +3,7 @@ import { ButtonProps } from "./button";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { FormDataLog, FormSchema } from "../ui";
 
 const LoadingOverlay = () => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-300 bg-opacity-100 backdrop-blur-sm">
@@ -14,117 +15,117 @@ const LoadingOverlay = () => (
 );
 
 export default function OrganizerButtonPart({
-  Button
+  Button,
 }: {
   Button: ButtonProps;
-}){
-    const params = useParams();
-    const reservationId = params?.id as string;
-    
-    const router = useRouter(); // Initialize the router
-    
-    const { data: session } = useSession();
-    const token = session?.user.token!;
-    
-    const { role, status, form, reservationData } = Button;
+}) {
+  const params = useParams();
+  const reservationId = params?.id as string;
 
-    // State to manage the loading status of the buttons
-    const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter(); // Initialize the router
 
-    const onSubmit = async (data: any) => {
-      const logName = data.log;
-      if(!logName) return;
-      await Request("APPLICATION", "WAITFORPAY", logName);
-      console.log("Selected Log:", logName);
-    };
+  const { data: session } = useSession();
+  const token = session?.user.token ?? "";
 
-    const Request = async (Curr: string, Prev: string, logName?: string) => {
-      try{
-          setIsLoading(true);
-          const res = await patchReservation(
-              reservationData.marketID,
-              Curr,
-              Prev,
-              reservationData.vendorId,
-              reservationId,
-              token,
-              logName
-          );
-          console.log("Patch successful:", res);
-          window.location.reload();
-        } catch (error) {
-          console.error("Failed to patch reservation:", error);
-        }  finally {
-          setIsLoading(false); 
-        }
-    };
-    
-    return (
-        <>
-        {/* Conditional Rendering of the Loading Overlay */}
-        {isLoading && <LoadingOverlay />}
+  const { role, status, form, reservationData } = Button;
 
-        {status === "APPLICATION" && (
-            <div className="flex justify-between mt-4 w-full">
-            <button
-              type="button"
-              className="px-5 py-2 rounded-md bg-red-600 text-white text-sm hover:bg-red-500 transition"
-              onClick={() => Request("APPLICATION", "RETIRE")}
-              style={{ cursor: "pointer" }}
-              disabled={isLoading} 
-            >
-              Reject
-            </button>
-            <button
-              type="button"
-              className="px-5 py-2 rounded-md bg-gray-800 text-white text-sm hover:bg-gray-700 transition"
-              onClick={() => onSubmit(form.getValues())}
-              style={{ cursor: "pointer" }}
-              disabled={isLoading} 
-            >
-              Submit
-            </button>
-            </div>
-        )}
+  // State to manage the loading status of the buttons
+  const [isLoading, setIsLoading] = useState(false);
 
-        {status === "WAITFORPAY" && (
+  const onSubmit = async (data: FormSchema) => {
+    const logName = data.log;
+    console.log(logName);
+    if (!logName) return;
+    await Request("APPLICATION", "WAITFORPAY", logName);
+    console.log("Selected Log:", logName);
+  };
+
+  const Request = async (Curr: string, Prev: string, logName?: string) => {
+    try {
+      setIsLoading(true);
+      const res = await patchReservation(
+        reservationData.marketID,
+        Curr,
+        Prev,
+        reservationData.vendorId,
+        reservationId,
+        token,
+        logName
+      );
+      console.log("Patch successful:", res);
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to patch reservation:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <>
+      {/* Conditional Rendering of the Loading Overlay */}
+      {isLoading && <LoadingOverlay />}
+
+      {status === "APPLICATION" && (
+        <div className="flex justify-between mt-4 w-full">
           <button
-              type="button"
-              className="px-5 py-2 rounded-md bg-red-600 text-white text-sm hover:bg-red-500 transition"
-              onClick={() => Request("WAITFORPAY", "RETIRE", reservationData.Log[0].name)}
-              style={{ cursor: "pointer" }}
-              disabled={isLoading} // Added disabled prop
-            >
-              Reject
-            </button>
-        )
-        }
-
-        {status === "VALIDATESLIP" && (
+            type="button"
+            className="px-5 py-2 rounded-md bg-red-600 text-white text-sm hover:bg-red-500 transition"
+            onClick={() => Request("APPLICATION", "RETIRE")}
+            style={{ cursor: "pointer" }}
+            disabled={isLoading}
+          >
+            Reject
+          </button>
           <button
-              type="button"
-              className="px-5 py-2 rounded-md bg-green-600 text-white text-sm hover:bg-green-500 transition"
-              onClick={() => Request("VALIDATESLIP", "MERCHANT")}
-              style={{ cursor: "pointer" }}
-              disabled={isLoading} // Added disabled prop
-            >
-              Approve
-            </button>
-        )
-        }
+            type="button"
+            className="px-5 py-2 rounded-md bg-gray-800 text-white text-sm hover:bg-gray-700 transition"
+            onClick={() => onSubmit(form.getValues())}
+            style={{ cursor: "pointer" }}
+            disabled={isLoading}
+          >
+            Submit
+          </button>
+        </div>
+      )}
 
-        {status === "MERCHANT" && (
-          <button
-              type="button"
-              className="px-5 py-2 rounded-md bg-gray-800 text-white text-sm hover:bg-gray-700 transition"
-              onClick={() => Request("MERCHANT", "WAITFORPAY")}
-              style={{ cursor: "pointer" }}
-              disabled={isLoading} // Added disabled prop
-            >
-              Send New Invoice
-            </button>
-        )
-        }
-        </>
-    );
+      {status === "WAITFORPAY" && (
+        <button
+          type="button"
+          className="px-5 py-2 rounded-md bg-red-600 text-white text-sm hover:bg-red-500 transition"
+          onClick={() =>
+            Request("WAITFORPAY", "RETIRE", reservationData.Log[0].name)
+          }
+          style={{ cursor: "pointer" }}
+          disabled={isLoading} // Added disabled prop
+        >
+          Reject
+        </button>
+      )}
+
+      {status === "VALIDATESLIP" && (
+        <button
+          type="button"
+          className="px-5 py-2 rounded-md bg-green-600 text-white text-sm hover:bg-green-500 transition"
+          onClick={() => Request("VALIDATESLIP", "MERCHANT")}
+          style={{ cursor: "pointer" }}
+          disabled={isLoading} // Added disabled prop
+        >
+          Approve
+        </button>
+      )}
+
+      {status === "MERCHANT" && (
+        <button
+          type="button"
+          className="px-5 py-2 rounded-md bg-gray-800 text-white text-sm hover:bg-gray-700 transition"
+          onClick={() => Request("MERCHANT", "WAITFORPAY")}
+          style={{ cursor: "pointer" }}
+          disabled={isLoading} // Added disabled prop
+        >
+          Send New Invoice
+        </button>
+      )}
+    </>
+  );
 }

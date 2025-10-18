@@ -16,7 +16,7 @@ const formSchemaApplication = z.object({
   log: z.string().nonempty("Please select a log for vendor"),
 });
 
-type FormSchema = z.infer<typeof formSchemaApplication>;
+export type FormSchema = z.infer<typeof formSchemaApplication>;
 
 export type FormDataLog = UseFormReturn<FormSchema>;
 
@@ -46,9 +46,9 @@ export default function ReservationDataPart({
   // Explicitly type slipImageKeys to avoid implicit any[]
   const slipImageKeys: { marketPlanImageUrl: string }[] = [];
 
-  const formSchemaApplication = z.object({
-    log: z.string().nonempty("Please select a log for vendor"),
-  });
+  // const formSchemaApplication = z.object({
+  //   log: z.string().nonempty("Please select a log for vendor"),
+  // });
 
   const form = useForm<z.infer<typeof formSchemaApplication>>({
     resolver: zodResolver(formSchemaApplication),

@@ -23,7 +23,7 @@ export default function VendorButtonPart({ Button }: { Button: ButtonProps }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { data: session } = useSession();
-  const token = session?.user.token!;
+  const token = session?.user.token ?? "";
 
   const { role, status, form, reservationData, newSlip } = Button;
 
