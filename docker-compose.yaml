@@ -1,0 +1,31 @@
+version: "3.10"
+
+services:
+  eieimarketplace-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eieimarketplace-ui
+    container_name: eieimarketplace-ui
+    env_file:
+      - .env.local
+    ports:
+      - "3000:3000"
+    networks:
+      - eieimarketplace-network
+
+  # eieimarketplace-api-gateway:
+  #   build:
+  #     context: ../eieimarketplace-api-gateway
+  #     dockerfile: Dockerfile
+  #   container_name: eieimarketplace-api-gateway
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #   networks:
+  #     - eieimarketplace-network
+
+# สร้าง network
+networks:
+  eieimarketplace-network:
+    driver: bridge
