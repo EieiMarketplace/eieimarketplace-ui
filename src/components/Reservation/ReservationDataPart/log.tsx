@@ -36,11 +36,13 @@ export default function LogPart({ LogProps }: { LogProps: LogProps }) {
                   {...field}
                 >
                   <option value="">Select a log...</option>
-                  {logs.map((eachLog, index) => (
-                    <option key={index} value={eachLog.name}>
-                      {eachLog.name}
-                    </option>
-                  ))}
+                  {logs
+                    .filter((eachLog) => eachLog.user_id !== "")
+                    .map((eachLog, index) => (
+                      <option key={index} value={eachLog.name}>
+                        {eachLog.name}
+                      </option>
+                    ))}
                 </select>
               </FormControl>
               <FormMessage />
