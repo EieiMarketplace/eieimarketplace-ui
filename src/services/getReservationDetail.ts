@@ -1,6 +1,9 @@
 import { ReservationDetail, VendorReservation } from "@/shared/interface";
 
-export async function getReservationDetail(id: string, token: string): Promise<ReservationDetail> {
+export async function getReservationDetail(
+  id: string,
+  token: string
+): Promise<ReservationDetail> {
   if (!id) throw new Error("Reservation ID is required");
 
   const response = await fetch(
@@ -9,7 +12,7 @@ export async function getReservationDetail(id: string, token: string): Promise<R
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     }
   );

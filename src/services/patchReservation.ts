@@ -5,27 +5,27 @@ export async function patchReservation(
   vendorId: string,
   reservationId: string,
   token: string,
-  logName?: string,
+  logName?: string
 ) {
-const reservationData = JSON.stringify({
+  const reservationData = JSON.stringify({
     marketId,
     vendorReservationPresentStatus,
     vendorReservationNextStatus,
     vendorId,
     logName: logName ?? "",
-});
-console.log(reservationData, reservationId);
-const response = await fetch(
+  });
+  console.log(reservationData, reservationId);
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL_Reservation}/reservations/reservation/change-status/${reservationId}`,
     {
-        method: "PATCH",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: reservationData,
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: reservationData,
     }
-);
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
